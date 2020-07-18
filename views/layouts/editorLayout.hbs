@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--
+	Future Imperfect by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+    <title>Editor</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/public/writerAssets/css/main.css" />
+    {{{_sections.css}}}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.0/css/fileinput.min.css">
+    <style>
+        .active {
+            box-shadow: inset 0 0 0 1px #2ebaae;
+            color: #29A99F !important;
+        }
+    </style>
+</head>
+
+
+<body class="single is-preload" style="background-color: #F4F4F4;">
+    <!-- Wrapper -->
+    <div id="wrapper">
+
+        <!-- Header -->
+        <header id="header" style="position: absolute; z-index: 8;">
+            <nav class="links">
+
+            </nav>
+            <nav class="main">
+                <ul>
+                    <li class="menu">
+                        <a class="fa-bars" href="#menu">Menu</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Menu -->
+        <section id="menu">
+
+            <!-- Search -->
+            <section>
+                <b>Name: </b>{{this.user.name}}
+            </section>
+
+            <!-- Links -->
+            <section>
+                <ul class="links">
+                    <h4>Chuyên mục quản lý</h4>
+                    {{#each localCategoriesEditor}}
+                    <li>
+                        <a href="/editor/list-article?cateParent_id={{id}}">
+                            <h3>{{name}}</h3>
+                        </a>
+                    </li>
+                    {{/each}}
+                </ul>
+            </section>
+
+            <!-- Actions -->
+            <section>
+                <ul class="actions stacked">
+                    <li><a href="javascript:;" class="button large fit">Profile</a></li>
+                    <form id="frmLogout" action="/account/logout" method="POST" hidden></form>
+                    <li><a href="javascript: $('#frmLogout').submit()" class="button large fit">Log out</a></li>
+                </ul>
+            </section>
+
+        </section>
+
+        <!-- Main -->
+        {{{body}}}
+    </div>
+
+
+
+    <script src="https://cdn.tiny.cloud/1/x9baslxizw89i4dwdrw5ekmrwm0g0kzlu6zdnw6u4s7gvc1s/tinymce/5/tinymce.min.js"
+        referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '#txtContent',
+            height: 500,
+            plugins: 'paste image link autolink lists table media',
+            menubar: false,
+            toolbar: [
+                'undo redo | bold italic underline strikethrough | numlist bullist | alignleft aligncenter alignright | forecolor backcolor | table link image media',
+            ],
+        });
+    </script>
+    <!-- Scripts -->
+    <script src="/public/writerAssets/js/jquery.min.js"></script>
+    <script src="/public/writerAssets/js/browser.min.js"></script>
+    <script src="/public/writerAssets/js/breakpoints.min.js"></script>
+    <script src="/public/writerAssets/js/util.js"></script>
+    <script src="/public/writerAssets/js/main.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.0/js/fileinput.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.0/themes/fa/theme.min.js"></script>
+    <script>
+        let index = 1;
+        function addTag() {
+            const txtTag = document.getElementById('txtTag');
+            const tagValue = txtTag.value;
+            if (tagValue === '') {
+                return alert('Vui lòng nhập tag để thêm');
+            }
+            txtTag.value = '';
+            $("#listTags").append(
+                `<div class="tag-item" id="tagItem-${index}">
+                    ${tagValue}
+                    <input type="hidden" value="${tagValue}" name="tags_name[]">
+                    <a onclick="removeTag(${index++})"><i class="fa fa-times lg" aria-hidden="true"></i></a>
+                </div>`
+            );
+        }
+        function removeTag(ind) {
+            $(`#tagItem-${ind}`).remove();
+        }
+        function tagIsEmpty() {
+            if (document.getElementsByClassName('tag-item').length === 0) {
+                alert("Bạn chưa thêm tag cho bài viết");
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        function replaceImg() {
+            const fileAVT = document.getElementById('fileAVT');
+            const showAVT = document.getElementById('show-avt');
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                showAVT.src = e.target.result;
+            }
+            reader.readAsDataURL(fileAVT.files[0]);
+        }
+    </script>
+
+
+    <script>
+        $("#file").fileinput({
+            theme: 'fa',
+            showCaption: true,
+            dropZoneEnabled: true,
+            allowedFileExtensions: ['png', 'jpg', 'jpeg']
+        });
+    </script>
+    {{{_sections.js}}}
+</body>
+
+</html>

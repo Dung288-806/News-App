@@ -1,0 +1,123 @@
+
+
+{{#if isArt}}
+
+<div class="row mb-3">
+    <div class="col col-sm-12">
+        <a href="/writer/postArticle" class="btn btn-success">
+            Add <i class="fa fa-plus-circle"></i>
+        </a>
+    </div>
+</div>
+{{/if}}
+<div class="wrap {{#if isArt}}{{else}} mt-5 {{/if}}" id="showWriterArt">
+    <div class="row">
+
+        <div class="col col-sm-12">
+            {{#if isHasSub}}
+            <div class="alert alert-danger">
+                Dont have any articles
+            </div>
+
+            {{else}}
+            <table style="text-align: center;" class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Title</th>
+                        {{#if isArt}}
+                        <th scope="col">Writer</th>
+                        {{/if}}
+                        <th scope="col">Post Date</th>
+                        <th scope="col">Views</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each listArt}}
+                    <tr>
+                        <td>{{this.id}}</td>
+                        <td>{{this.title}}</td>
+                        {{#if this.Writer_id}}
+                        <th scope="col"><a href="/admin/writer/view/{{this.Writer_id}}">{{this.Writer_id}}</a></th>
+                        {{/if}}
+                        <td>{{formatDate this.post_date}}</td>
+                        <td>{{this.views}}</td>
+                        <td>{{this.status}}</td>
+                        <td class="action">
+                            <a href="/writer/editArticle?Articles_id={{this.id}}" class="btn btn-warning">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <form action="/admin/articles/del" method="POST">
+                                <input name="id" type="hidden" value="{{this.id}}">
+                                {{#if this.id_writer}}
+                                <input name="id_writer" type="hidden" value="{{this.id_writer}}">
+                                {{/if}}
+                                <button class=" action_del " type="submit"> <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="row footer">
+        <div class="col col-sm-12">
+
+            <nav aria-label="...">
+                {{#if isArt}}
+                <ul class="pagination">
+                    <li class="page-item {{#if preDis}} disabled {{/if}}">
+                        <a href="/admin/articles?page={{prePage}}" class="page-link" tabindex="-1">Previous</a>
+                    </li>
+                    {{#each numPage}}
+                    <li  class="page-item {{#if this.isActive}} active {{/if}}">
+                        <a href="/admin/articles?page={{this.val}}" class="page-link">{{this.val}}</a></li>
+                    {{/each}}
+                    <li class="page-item {{#if nextDis}} disabled {{/if}}">
+                        <a href="/admin/articles?page={{nextPage}}" class="page-link ">Next</a>
+                    </li>
+                </ul>
+                {{else}}
+                <ul class="pagination">
+                    <li class="page-item {{#if preDis}} disabled {{/if}}">
+                        <a href="/admin/writer/art/id/{{id}}?page={{prePage}}" class="page-link" tabindex="-1">Previous</a>
+                    </li>
+                    {{#each numPage}}
+                    <li 
+                        class="page-item {{#if this.isActive}} active {{/if}}">
+                        <a href="/admin/writer/art/id/{{id}}?page={{this.val}}" class="page-link">{{this.val}}</a></li>
+                    {{/each}}
+                    <li class="page-item {{#if nextDis}} disabled {{/if}}">
+                        <a href="/admin/writer/art/id/{{id}}?page={{nextPage}}" class="page-link ">Next</a>
+                    </li>
+                </ul>
+
+                {{/if}}
+            </nav>
+
+        </div>
+    </div>
+
+
+</div>
+
+{{#section 'js'}}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Menu Toggle Script -->
+<script>
+    $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
+{{/section}}

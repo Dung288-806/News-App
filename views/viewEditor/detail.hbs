@@ -1,0 +1,228 @@
+<!-- Main -->
+<div id="main">
+    {{#if articleIsNotManageByEditor}}
+    <h2>Bài viết không hợp lệ</h2>
+    {{else}}
+    <form method="POST" id="form-confirm" onsubmit="return tagIsEmpty()">
+        <input type="hidden" name="Articles_id" value={{Articles_id}}>
+        <div class="form-popup" id="form-popup">
+            <div id="form-approved" class="form-popup-approved">
+                <div>
+                    <div id="checkPostDate"
+                        style="background-color: #E3626F; padding: 12px 24px; color: #FFF; display:none;">
+                    </div>
+                    <label for="txtPostDate">Chọn thời gian xuất bản</label>
+                    <input type="text" id="txtPostDate" name="post_date" autocomplete="off"></input>
+                    <div class="btn-action">
+                        <button type="submit" class="btn btn-approved" onclick="return checkPostDate()"
+                            formaction="/editor/approved">Gửi</button>
+                        <button type="button" class="btn btn-denied" onclick="javascript: closePopup();">Hủy
+                            bỏ</button>
+                    </div>
+                </div>
+            </div>
+            <div id="form-denied" class="form-popup-denied">
+                <div>
+                    <label for="txtReason">Lý do từ chối</label>
+                    <textarea type="text" id="txtReason" name="reason_reject"></textarea>
+                    <div class="btn-action">
+                        <button type="submit" class="btn btn-approved" formaction="/editor/denied">Gửi</button>
+                        <button type="button" class="btn btn-denied" onclick="javascript: closePopup();">Hủy
+                            bỏ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="post">
+            <header>
+                <div class="title d-flex flex-column">
+                    <div class="txt-title">
+                        <input id="txtTitle" type="text" placeholder="Tiêu đề" value="{{article.title}}" required
+                            readonly>
+                    </div>
+                    <div class="txt-sum-content flex-fill">
+                        <textarea class="h-100" id="txtSumContent" placeholder="Nội dung tóm tắt" required
+                            readonly>{{article.sum_content}}</textarea>
+                    </div>
+                </div>
+                <div class="meta d-flex flex-column align-items-center" style="padding: 40px 20px;">
+                    <form method="post"></form>
+                    <button type="button" onclick="javascript: showPopupApproved();">Duyệt</button>
+                    <button type="button" class="btn-denied" onclick="javascript: showPopupDenied();">Từ chối</button>
+                    <div class="form-group w-100">
+                        <label class="text-left w-100 m-0">Thời gian viết:</label>
+                        <time class="published w-100 text-center m-0" id="txtWriteDate">{{article.dateWrite}}</time>
+                    </div>
+                    <div class="form-group w-100">
+                        <label for="sCategories" class="float-left">Chuyên mục</label>
+                        <select class="form-control" id="sCategories" name="CategoriesSub_id" style="cursor: pointer;">
+                            {{#each allCategoriesSub}}
+                            <option value="{{id}}" {{#if isSelected}}selected{{/if}}>{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="form-group w-100">
+                        <label for="sTypeCategories" class="float-left">Loại bài báo</label>
+                        <select class="form-control" id="sTypeCategories" style="cursor: pointer;" readonly>
+                            {{#if article.typeIss}}selected{{/if}}
+                            <option value="0" {{#if normalIsSelected}}selected{{/if}}>Normal</option>
+                            <option value="1" {{#if premiumIsSelected}}selected{{/if}}>Premium</option>
+                        </select>
+                    </div>
+                </div>
+            </header>
+            <main id="main-detail">
+                <h4>Ảnh đại diện:</h4>
+                <a class="image featured"><img id="show-avt" src="/public{{article.big_avt}}" alt="" /></a>
+                <div>
+                    <h4>Nội dung:</h4>
+                    {{{article.content}}}
+                </div>
+                <div class="tag-container">
+                    <div class="add-tag">
+                        <input type="text" id="txtTag" placeholder="Nhập tag...">
+                        <a onclick="addTag()">Thêm tag</a>
+                    </div>
+                    <div class="list-tags" id="listTags">
+                        {{#each tags}}
+                        <div class="tag-item" id="tagItem-{{tailID}}">
+                            {{tag_name}}
+                            <input type="hidden" value="{{tag_name}}" name="tags_name[]">
+                            <a onclick="removeTag({{tailID}})"><i class="fa fa-times lg" aria-hidden="true"></i></a>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </form>
+    {{/if}}
+</div>
+{{#section 'css'}}
+<link rel="stylesheet" href="/public/writerAssets/css/style.css" />
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+<style>
+    #main-detail img {
+        height: auto;
+    }
+
+    .form-popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        margin: auto;
+        z-index: 9;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .form-popup::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #000;
+        opacity: 0.4;
+        z-index: -1;
+    }
+
+    .btn {
+        color: #FFF !important;
+        border-radius: 5px;
+        height: 40px !important;
+    }
+
+    .btn-denied {
+        background-color: #DC3545 !important;
+    }
+
+    .btn-denied:hover {
+        color: #FFF !important;
+        background-color: #E04E5C !important;
+        box-shadow: inset 0 0 0 1px #DC3545;
+    }
+
+    .btn-approved {
+        background-color: #2ebaae !important;
+    }
+
+    .btn-approved:hover {
+        color: #FFF !important;
+        background-color: #40D0C6 !important;
+        box-shadow: inset 0 0 0 1px #40D0C6;
+    }
+
+    .form-popup-approved,
+    .form-popup-denied {
+        box-sizing: border-box;
+    }
+
+    .form-popup-approved>div,
+    .form-popup-denied>div {
+        padding: 50px !important;
+        box-sizing: border-box;
+        background-color: #FFF;
+    }
+
+    .btn-action {
+        margin-top: 16px;
+    }
+
+    #main-detail img {
+        max-width: 100% !important;
+    }
+</style>
+{{/section}}
+{{#section 'js'}}
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script>
+    function sendPopup() {
+        document.getElementById('form-confirm').submit();
+    };
+    function closePopup() {
+        document.getElementById('form-popup').style.display = "none";
+    };
+    function showPopupApproved() {
+        document.getElementById('txtReason').required = false;
+        document.getElementById('txtPostDate').required = true;
+        document.getElementById('form-popup').style.display = "block";
+        document.getElementById('form-approved').style.display = "block";
+        document.getElementById('form-denied').style.display = "none";
+    };
+    function showPopupDenied() {
+        document.getElementById('txtReason').required = true;
+        document.getElementById('txtPostDate').required = false;
+        document.getElementById('form-popup').style.display = "block";
+        document.getElementById('form-approved').style.display = "none";
+        document.getElementById('form-denied').style.display = "block";
+    };
+
+    function checkPostDate() {
+        const post_date = document.getElementById('txtPostDate').value;
+        const write_date = document.getElementById('txtWriteDate').innerHTML;
+        if (new Date(post_date) < new Date(write_date)) {
+            const message = document.getElementById('checkPostDate')
+            message.style.display = 'block';
+            message.innerHTML = 'Thời gian xuất bản phải lớn hơn thời gian viết bài!';
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+
+    $('#txtPostDate').datetimepicker({
+        format: 'H:i:s m/d/Y',
+        timepicker: true,
+        mask: true,
+    });
+    $('#txtPostDate').datepicker('setDate', new Date());
+</script>
+{{/section}}

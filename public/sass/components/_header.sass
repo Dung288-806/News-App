@@ -1,0 +1,41 @@
+.search-container
+    position: relative
+    margin-right: 12px
+    
+.input-search
+    color: #222
+    width: 120px
+    box-sizing: border-box
+    border-radius: 50px
+    border: 2px solid #F5BC04
+    font-size: 16px
+    padding: 8px 12px
+    transition: width 0.4s
+
+.input-search:focus
+    outline: none
+    width: 400px
+
+.button-search
+    position: absolute
+    top: 7px
+    right: 12px
+    background: none
+    border: none
+    outline: none
+    cursor: pointer
+    &> i
+        color: #777
+    &:hover > i
+        color: #222
+
+.login, .register
+    color: #222
+    &:hover
+        text-decoration: none
+        color: #F5BC04
+
+.user-dropdown
+    &:hover > .btn
+        color: #F5BC04 !important
+        transition: all 0.3s

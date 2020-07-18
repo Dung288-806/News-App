@@ -1,0 +1,276 @@
+<div id="main">
+    <div id="form-show-source-img" class="popup form-popup" style="display: none">
+        <div id="noticeCopySuccess" class="mb-2"
+            style="background-color: #28A745; padding: 12px 24px; color: #FFF; display:none;">
+        </div>
+        <input type="text" id="sourceImg" style="background-color: #FFF; margin-bottom: 8px;" readonly>
+        <button type="button" onclick="copySource();" class="btn1 btn1-success">Copy</button>
+        <button type="button" onclick="closeFormPopup('form-show-source-img');" class="btn1 btn1-error">Đóng</button>
+    </div>
+    <form method="POST" class="popup form-popup" id="formUploadPopup" style="display:none"
+        enctype="multipart/form-data">
+        <button type="button" class="form-popup-close" onclick="closeFormPopup('formUploadPopup');">
+            <i class="fa fa-window-close" aria-hidden="true"></i>
+        </button>
+        <div class="form-popup-content" id="form-popup-content">
+            <input type="file" id="file-img-upload" name="imgArticle" style="background-color: #CCC;" accept="image/*"
+                required multiple>
+            <button type="button" onclick="javascript: uploadImg();" class="btn1 btn1-success">Upload</button>
+        </div>
+    </form>
+    <form method="POST" action="/writer/postArticle/add" onsubmit="return tagIsEmpty()" enctype="multipart/form-data">
+        <div class="post">
+            <header>
+                <div class="title d-flex flex-column">
+                    <div class="txt-title">
+                        <input id="txtTitle" name="title" type="text" placeholder="Tiêu đề" required>
+                    </div>
+                    <div class="txt-sum-content flex-fill">
+                        <textarea class="h-100" id="txtSumContent" name="sum_content" placeholder="Nội dung tóm tắt"
+                            required></textarea>
+                    </div>
+                </div>
+                <div class="meta d-flex flex-column align-items-center" style="padding: 40px 20px;">
+                    <button type="submit">Đăng bài</button>
+                    <div class="form-group w-100">
+                        <label for="sCategories" class="float-left">Chuyên mục</label>
+                        <select class="form-control" id="sCategories" name="CategoriesSub_id" style="cursor: pointer;">
+                            {{#each allCategoriesSub}}
+                            <option value="{{id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                    <div class="form-group w-100">
+                        <label for="sTypeCategories" class="float-left">Loại bài báo</label>
+                        <select class="form-control" id="sTypeCategories" name="typeArticle" style="cursor: pointer;">
+                            <option value="0">Normal</option>
+                            <option value="1">Premium</option>
+                        </select>
+                    </div>
+                    <div class="form-group w-100">
+                        <label for="avt" class="float-left">Chọn hình đại diện</label>
+                        <input type="file" id="fileAVT" name="avt" class="w-100" accept="image/*"
+                            onchange="replaceImg()" required>
+                    </div>
+                </div>
+            </header>
+            <main>
+                <h4>Ảnh đại diện:</h4>
+                <a class="image featured"><img id="show-avt" src="/public{{article.big_avt}}" alt="" /></a>
+                <div class="d-flex">
+                    <textarea name="content" id="txtContent" placeholder="Nội dung bài báo..."></textarea>
+                    <div class="d-flex">
+                        <div class="card" style="margin-left: 20px; width: 300px; max-height: 100%; overflow: auto;">
+                            <div class="card-header d-flex justify-content-between align-items-center"
+                                style="text-transform: uppercase;">
+                                Source Images
+                                <button type="button"
+                                    style="width: 40px; height: 40px; padding: 0; box-shadow: none; outline:none;"
+                                    title="Upload Image" onclick="openFormPopup('formUploadPopup')">
+                                    <i class="fa fa-folder" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <ul class="list-group list-group-flush" id="list-img-group" style="height: 0;">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="tag-container">
+                    <div class="add-tag">
+                        <input type="text" id="txtTag" placeholder="Nhập tag...">
+                        <a onclick="addTag()">Thêm tag</a>
+                    </div>
+                    <div class="list-tags" id="listTags"></div>
+                </div>
+            </main>
+        </div>
+    </form>
+</div>
+
+{{#section 'css'}}
+<link rel="stylesheet" href="/public/writerAssets/css/style.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.0/css/fileinput.min.css">
+<style>
+    .tox {
+        flex-grow: 1;
+    }
+
+    .form-popup {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9;
+        padding: 80px;
+    }
+
+    .popup::before {
+        content: '';
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #000;
+        opacity: 0.4;
+        z-index: -1;
+    }
+
+    .form-popup-close {
+        position: fixed;
+        top: 5px;
+        right: 5px;
+        color: #333 !important;
+        background-color: #eee;
+        box-shadow: inset 0 0 0 1px #333;
+        padding: 0;
+        width: 40px;
+        height: 40px;
+    }
+
+    .form-popup-close i {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    .form-popup-content {
+        padding: 8px;
+    }
+
+    .btn1 {
+        color: #FFF !important;
+        background-color: #CCC;
+        margin: 0 !important;
+        height: 32px;
+        padding: 0 16px;
+        box-shadow: none;
+        border-radius: 5px;
+        font-weight: 500;
+        font-size: 14px;
+        outline: none !important;
+    }
+
+    .btn1:hover {
+        box-shadow: none;
+        color: #FFF !important;
+    }
+
+    .btn1-success {
+        background-color: #2ebaae;
+    }
+
+    .btn1-success:hover {
+        background-color: #40D0C6;
+    }
+
+    .btn1-error {
+        background-color: #DC3545;
+    }
+
+    .btn1-error:hover {
+        background-color: #E04E5C;
+    }
+</style>
+{{/section}}
+{{#section 'js'}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.0/js/fileinput.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.0/themes/fa/theme.min.js"></script>
+<script>
+    function openFormPopup(form_id) {
+        document.getElementById(form_id).style.display = "block";
+    }
+    function closeFormPopup(form_id) {
+        document.getElementById(form_id).style.display = "none";
+    }
+
+    function uploadImg() {
+        if (document.getElementById('file-img-upload').value === '') {
+            return alert('chưa chọn file upload');
+        }
+
+        const formUploadPopup = document.getElementById('formUploadPopup');
+        const formData = new FormData(formUploadPopup);
+        $.ajax({
+            url: '/writer/upload-image-article',
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                for (item of data.list_source) {
+                    $("#list-img-group").prepend(
+                        `<li class="list-group-item d-flex justify-content-center align-center" style="cursor: pointer; background-color: #EEE"
+                            id="img-item-${item.id}">
+                            <a style="border: none;">
+                                <input type="hidden" name="listIdImg[]" value="${item.id}">
+                                <img style="max-width: 60%" src="/public${item.source_img}">
+                                <div class="d-flex w-100 mt-3">
+                                    <button type="button" class="btn1 btn1-success" style="flex-grow: 1;"
+                                        onclick="openFormPopup('form-show-source-img');showSourceImg('/public${item.source_img}');">Xem Source</button>
+                                    <button type="button" class="btn1 btn1-error" style="flex-grow: 1;"
+                                        onclick="deleteImg(${item.id}, '${item.source_img}')">Xóa</button>
+                                </div>
+                            </a>
+                        </li>`
+                    );
+                }
+                document.getElementById('file-img-upload').value = '';
+                closeFormPopup('formUploadPopup');
+            },
+        });
+    }
+
+    function showSourceImg(source) {
+        document.getElementById('sourceImg').value = source;
+    }
+
+    function copySource() {
+        const copyText = document.getElementById("sourceImg");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+
+        const message = document.getElementById('noticeCopySuccess')
+        setTimeout(function () {
+            message.style.display = 'none';
+        }, 2000)
+        message.style.display = 'block';
+        message.innerHTML = 'Copied';
+    }
+
+    function deleteImg(id_img, source_img) {
+        alert(1);
+        $.ajax({
+            url: '/writer/delete-image-article',
+            type: "POST",
+            data: JSON.stringify({ id_img, source_img }),
+            dataType: "json",
+            contentType: 'application/json',
+            processData: false,
+            success: function (data) {
+                if (data.deleted) {
+                    $(`#img-item-${id_img}`).remove();
+                }
+                else {
+                    alert('Xóa hình ảnh thất bại thất bại');
+                }
+            },
+        });
+    }
+</script>
+<script>
+    $("#file-img-uplo").fileinput({
+        theme: 'fa',
+        showCaption: true,
+        dropZoneEnabled: true,
+        showUpload: true,
+        showRemove: false,
+        showCancel: false,
+        allowedFileExtensions: ['png', 'jpg', 'jpeg']
+    });
+</script>
+{{/section}}

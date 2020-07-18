@@ -1,0 +1,131 @@
+<!-- Main -->
+<div id="main">
+    <!-- Post -->
+    {{#if isEmpty}}
+    <h2>Không có dữ Liệu.</h2>
+    {{else}}
+    {{#each rows}}
+    <article class="post">
+        <header>
+            <div class="title">
+                <h2><a style="font-weight: 900 !important;">{{title}}</a>
+                </h2>
+                <p><b>Chuyên mục: </b><a style="border-bottom: none !important;">{{cpName}} > {{csName}}</a>
+                </p>
+            </div>
+            <div class="meta d-flex flex-column align-items-center">
+                <time class="published">{{dateWrite}}</time>
+                <a class="author">
+                    <span class="" class="name"><b>Status: </b>{{statusName}}</span>
+                </a>
+                <a class="author">
+                    <span class="" class="name"><b>Loại: </b>{{typeName}}</span>
+                </a>
+            </div>
+        </header>
+        <a class="image featured"><img src="/public{{big_avt}}" alt="" /></a>
+        <p>{{sum_content}}</p>
+        <div class="list-tags" id="listTags">
+            {{#each tags}}
+            <div class="tag-item" id="tagItem-{{tailID}}">
+                {{tag_name}}
+            </div>
+            {{/each}}
+        </div>
+        <footer>
+            <ul class="actions">
+                <form id="form-edit-{{id}}" action="/editor/detail" method="get">
+                    <input type="hidden" name="Articles_id" value="{{id}}">
+                </form>
+                <li><a onclick="document.getElementById('form-edit-{{id}}').submit();" class="button large">Detail</a>
+                </li>
+            </ul>
+        </footer>
+
+    </article>
+    {{/each}}
+
+
+    <!-- Pagination -->
+    <ul class="actions pagination d-flex justify-content-center">
+        <li>
+            <a href="?cateParent_id={{cateParent_id}}&page={{prePage}}"
+                class="button large previous {{#if preDisable}}disabled{{/if}}">
+                <i class="fa fa-angle-left" aria-hidden="true"></i>
+            </a>
+        </li>
+        {{#each pageItems}}
+        <li>
+            <a href="?cateParent_id={{../cateParent_id}}&page={{value}}"
+                class="button large previous {{#if isActive}}active{{/if}}">
+                {{value}}
+            </a>
+        </li>
+        {{/each}}
+        <li>
+            <a href="?cateParent_id={{cateParent_id}}&page={{nextPage}}"
+                class="button large next {{#if nextDisable}}disabled{{/if}}">
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+    {{/if}}
+</div>
+
+{{#section 'css'}}
+<style>
+    .post img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .list-tags {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .tag-item {
+        color: #FFF;
+        padding: 10px 15px;
+        background-color: #2ebaae;
+        cursor: pointer;
+        margin: 12px 12px 12px 0;
+        position: relative;
+        transition: all 0.4s;
+    }
+
+    .tag-item>a {
+        display: none;
+        position: absolute;
+        border-radius: 50%;
+        top: 0;
+        right: 0;
+        height: 16px;
+        width: 16px;
+        background-color: #eee;
+        border-bottom: none;
+        cursor: pointer;
+        transform: translate(50%, -50%);
+        opacity: 0.7;
+    }
+
+    .tag-item>a:hover {
+        opacity: 1;
+    }
+
+    .tag-item>a>i {
+        color: #222;
+        font-size: 12px;
+    }
+
+    .tag-item:hover {
+        background-color: #40D0C6;
+    }
+
+    .tag-item:hover>a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+{{/section}}

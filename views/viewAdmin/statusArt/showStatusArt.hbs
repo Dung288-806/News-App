@@ -1,0 +1,51 @@
+<div class="row mb-3">
+    <div class="col col-sm-12">
+        <a href="/admin/status/add" class="btn btn-success">
+            Add <i class="fa fa-plus-circle"></i>
+        </a>
+    </div>
+</div>
+<div class="wrap" id="showCate">
+    <div class="row">
+        <div class="col col-sm-12">
+            {{#if err}}
+            <div class="alert alert-danger">
+                {{mes}}
+            </div>
+
+            {{else}}
+            <table style="text-align: center;" class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">SumArt</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each allStt}}
+                    <tr>
+                        <th scope="row">{{this.id}}</th>
+                        <th scope="row">{{this.name}}</th>
+                        <th scope="row">{{this.sl}}</th>
+                        <td class="action">
+                            <a href="/admin/status/edit/{{this.name}}" class="btn btn-warning">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <form action="/admin/status/del" method="POST">
+                                <input name="id" type="hidden" value="{{this.id}}">
+                                <button class="action_del {{#if this.isDel}} disabled  {{/if}}" type="submit"> <i
+                                        class="fa fa-trash"></i> </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    {{/each}}
+                </tbody>
+            </table>
+            {{/if}}
+        </div>
+    </div>
+
+</div>

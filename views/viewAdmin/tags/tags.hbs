@@ -1,0 +1,100 @@
+{{#if isHas }}
+<div class="row mb-3">
+    <div class="col col-sm-12">
+        <div class="alert alert-danger">Dont have any data</div>
+    </div>
+</div>
+
+{{else}}
+<div class="row">
+    <div class="col col-sm-12">
+        <a href="/admin/tags/add" class="btn btn-success mb-3">
+            Add <i class="fa fa-plus-circle"></i>
+        </a>
+    </div>
+</div>
+<div class="wrap" id="showTag">
+    <div class="row">
+        <div class="col col-sm-12">
+            {{#if err}}
+            <div class="alert alert-danger">
+                {{mes}}
+            </div>
+
+            <div class="alert alert-danger err">
+            </div>
+            {{else}}
+
+            <table style="text-align: center;" class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Sum Article</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each listTags}}
+                    <tr>
+                        <th scope="row">{{this.id}}</th>
+                        <td><a class="btn btn-info btn-set" href="/admin/tags/detail/{{this.id}}">{{this.tag_name}}</a>
+                        </td>
+                        <td>{{this.sum}}</td>
+                        <td class="action">
+                            <a href="/admin/tags/edit/{{this.id}}" class="btn btn-warning">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <form action="/admin/tags/del" method="POST">
+                                <input name="id" type="hidden" value="{{this.id}}">
+                                <button class=" action_del {{#if this.isDel}} disabled  {{/if}}" type="submit"> <i
+                                        class="fa fa-trash"></i> </button>
+                            </form>
+
+                        </td>
+                    </tr>
+
+                    {{/each}}
+                </tbody>
+            </table>
+            {{/if}}
+        </div>
+    </div>
+    <div class="row footer">
+        <div class="col col-sm-12">
+            {{!-- page --}}
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="page-item {{#if preDis}} disabled {{/if}}">
+                        <a href="/admin/tags?page={{prePage}}" class="page-link" tabindex="-1">Previous</a>
+                    </li>
+                    {{#each numPage}}
+                    <li class="page-item {{#if this.isActive}} active {{/if}}">
+                    <a href="/admin/tags?page={{this.val}}" class="page-link">{{this.val}}</a></li>
+                    {{/each}}
+                    <li class="page-item {{#if nextDis}} disabled {{/if}}">
+                        <a href="/admin/tags?page={{nextPage}}" class="page-link ">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+</div>
+
+{{#section 'js'}}
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Menu Toggle Script -->
+<script>
+    $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+</script>
+{{/section}}
+
+{{/if}}
+

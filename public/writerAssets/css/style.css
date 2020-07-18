@@ -1,0 +1,109 @@
+body {
+  background-color: #F4F4F4; }
+
+textarea {
+  font-family: "Raleway", Helvetica, sans-serif; }
+
+.post {
+  padding: 0;
+  background-color: #FAFAFA; }
+  .post > header {
+    width: 100%;
+    position: static;
+    margin: 0; }
+    .post > header .title {
+      padding: 32px; }
+  .post > main {
+    margin: 8px 40px 40px; }
+
+.txt-title {
+  position: relative;
+  font-size: 24px;
+  margin-bottom: 16px; }
+  .txt-title > input {
+    font-weight: bold;
+    padding: 0 16px;
+    background: none;
+    padding: auto; }
+
+.txt-sum-content > textarea {
+  background: none;
+  resize: none;
+  height: 150px; }
+
+.meta > button {
+  width: 100%;
+  height: 40px !important;
+  border-radius: 5px;
+  background-color: #2ebaae;
+  color: #FFF !important;
+  font-weight: 500;
+  padding: 0 16px;
+  margin: 0; }
+  .meta > button:hover {
+    background-color: #40D0C6; }
+  .meta > button:focus {
+    outline: none !important; }
+
+.tag-container {
+  margin: 16px 0; }
+
+.add-tag {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px; }
+  .add-tag > input {
+    width: 300px;
+    border-radius: 5px;
+    margin-right: 8px;
+    transition: all 0.4s; }
+  .add-tag > a {
+    outline: none;
+    text-decoration: none !important;
+    background-color: #2ebaae;
+    color: #FFF !important;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.4s; }
+    .add-tag > a:hover {
+      background-color: #40D0C6; }
+
+.list-tags {
+  display: flex;
+  flex-wrap: wrap; }
+
+.tag-item {
+  color: #FFF;
+  padding: 10px 15px;
+  background-color: #2ebaae;
+  cursor: pointer;
+  margin: 12px 12px 12px 0;
+  position: relative;
+  transition: all 0.4s; }
+  .tag-item > a {
+    display: none;
+    position: absolute;
+    border-radius: 50%;
+    top: 0;
+    right: 0;
+    height: 16px;
+    width: 16px;
+    background-color: #eee;
+    border-bottom: none;
+    cursor: pointer;
+    transform: translate(50%, -50%);
+    opacity: 0.7; }
+    .tag-item > a:hover {
+      opacity: 1; }
+    .tag-item > a > i {
+      color: #222;
+      font-size: 12px; }
+  .tag-item:hover {
+    background-color: #40D0C6; }
+    .tag-item:hover > a {
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+
+/*# sourceMappingURL=style.css.map */

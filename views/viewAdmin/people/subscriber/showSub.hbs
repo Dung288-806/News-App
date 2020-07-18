@@ -1,0 +1,69 @@
+
+<div class="wrap" id="showSub">
+    <div class="row">
+        <div class="col col-sm-12">
+            <table class="table table-dark text-center">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each listSub}}
+                    <tr>
+                        <th scope="row">{{this.id}}</th>
+                        <th scope="row">{{this.name}}</th>
+
+                        <th scope="row">{{this.email}}</th>
+                        <td class="action">
+                            <a href="/admin/subscriber/view/{{this.id}}" class="btn btn-warning">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <form action="/admin/subscriber/del" method="POST">
+                                <input name="id" type="hidden" value="{{this.id}}">
+                                <button class=" action_del" type="submit"> <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row footer">
+        <div class="col col-sm-12">
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="page-item {{#if preDis}} disabled {{/if}}">
+                        <a href="/admin/subscriber?page={{prePage}}" class="page-link"  tabindex="-1">Previous</a>
+                    </li>
+                    {{#each numPage}}
+                    <li class="page-item {{#if this.isActive}} active {{/if}}"><a
+                         href="/admin/subscriber?page={{this.val}}"   class="page-link">{{this.val}}</a></li>
+                    {{/each}}
+                    <li class="page-item {{#if nextDis}} disabled {{/if}}">
+                        <a href="/admin/subscriber?page={{nextPage}}" class="page-link ">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+</div>
+
+{{#section 'js'}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<script>
+    $("#menu-toggle").click(function (e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+
+</script>
+{{/section}}

@@ -1,0 +1,82 @@
+<div>
+    <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Comment</div>
+</div>
+{{#if this.isLogin}}
+<form method="POST" id="form-comment">
+    <textarea name="comment" id="txtComment" cols="30" rows="10" placeholder="Enter your comments..."
+        required></textarea>
+    <a onclick="addComment({{article_id}})" style="cursor: pointer;">
+        <i class="fa fa-paper-plane fa-lg" aria-hidden="true" style="color: #0091F2;"></i>
+    </a>
+</form>
+{{else}}
+<h5 style="margin-bottom: 40px;">
+    Vui lòng <a href="/account/login">đăng nhập</a> để bình luận.
+</h5>
+{{/if}}
+{{#if this.comIsEmpty}}
+<h5>Chưa có bình luận nào.</h5>
+{{else}}
+{{#each this.allCommentByArticle}}
+<div class="user-comment">
+    <div class="user-comment-avt"></div>
+    <div class="comment-content">
+        <div class="name-user">
+            {{name}}
+        </div>
+        <div class="content">
+            <span>
+                {{com_content}}
+            </span>
+        </div>
+        <div class="time-comment">
+            {{dateComment}}
+        </div>
+    </div>
+</div>
+{{/each}}
+<nav aria-label="..." class="w-100 d-flex justify-content-center">
+    <ul class="pagination">
+        <li class="page-item {{#if preDisable}}disabled{{/if}}">
+            <a class="page-link" href="javascript:;" onclick="pagingComment({{article_id}}, {{pagePre}})">
+                <span aria-hidden="true">«</span>
+            </a>
+        </li>
+        {{#each pageItems}}
+        <li class="page-item {{#if isActive}}active{{/if}}">
+            <a class="page-link" href="javascript:;" onclick="pagingComment({{article_id}}, {{value}})">
+                {{value}}
+            </a>
+        </li>
+        {{/each}}
+        <li class="page-item {{#if nextDisable}}disabled{{/if}}">
+            <a class="page-link" href="javascript:;" onclick="pagingComment({{article_id}}, {{pageNext}})">
+                <span aria-hidden="true">»</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+{{/if}}
+
+{{#section 'js'}}
+<script>
+    function addComment(article_id) {
+        const com_content = document.getElementById('txtComment').value;
+        if (com_content === "")
+            return alert("Chưa có nội dung bình luận");
+        $.post(`/articles/detail/${article_id}/addComment`,
+            { com_content },
+            function (data) {
+                document.getElementById('comments').innerHTML = data.html;
+            },
+            'json')
+    }
+
+    function pagingComment(article_id, page) {
+        $.getJSON(`/articles/detail/${article_id}/pagingComment?page=` + page,
+            function (data) {
+                document.getElementById('comments').innerHTML = data.html;
+            })
+    }
+</script>
+{{/section}}

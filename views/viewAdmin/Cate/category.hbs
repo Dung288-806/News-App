@@ -1,0 +1,101 @@
+{{#if isHas }} 
+<div class="row mb-3">
+    <div class="col col-sm-12">
+       <div class="alert alert-danger">Dont have any data</div>
+    </div>
+</div>
+
+{{else}}
+
+
+<div class="row mb-3">
+    <div class="col col-sm-12">
+        <a href="/admin/categories/add" class="btn btn-success">
+            Add <i class="fa fa-plus-circle"></i>
+        </a>
+    </div>
+</div>
+<div class="wrap" id="showCate">
+    <div class="row">
+        <div class="col col-sm-12">
+            {{#if err}}
+            <div class="alert alert-danger">
+                {{mes}}
+            </div>
+
+            {{else}}
+            <table style="text-align: center;" class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Sum CateSub</th>
+                        <th scope="col">Manager</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each allCate}}
+                    <tr>
+                        <th scope="row">{{this.id}}</th>
+                        <td><a class="btn btn-info btn-set" href="/admin/categories/{{this.id}}">{{this.name}}</a></td>
+                        <td>{{this.sum}}</td>
+                        <td><a class="btn btn-primary btn-set"
+                                href="/admin/editor/{{this.id_editor}}">{{this.Username}}</a>
+                        </td>
+                        <td class="action">
+                            <a href="/admin/categories/edit/{{this.id}}" class="btn btn-warning">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <form action="/admin/categories/del" method="POST">
+                                <input name="id" type="hidden" value="{{this.id}}">
+                                <button class=" action_del {{#if this.isDel}} disabled  {{/if}}" type="submit"> <i
+                                        class="fa fa-trash"></i> </button>
+                            </form>
+                        </td>
+                    </tr>
+
+                    {{/each}}
+                </tbody>
+            </table>
+            {{/if}}
+        </div>
+    </div>
+    <div class="row footer">
+        <div class="col col-sm-12">
+            <nav aria-label="...">
+
+                <ul class="pagination">
+                    <li class="page-item {{#if preDis}} disabled {{/if}}">
+                        <a class="page-link" href="/admin/categories?page={{prePage}}" tabindex="-1">Previous</a>
+                    </li>
+                    {{#each numPage}}
+                    <li class="page-item {{#if this.isActive}} active {{/if}}">
+                    <a href="/admin/categories?page={{this.val}}" class="page-link">{{this.val}}</a></li>
+                    {{/each}}
+                    <li class="page-item {{#if nextDis}} disabled {{/if}}">
+                        <a href="/admin/categories?page={{nextPage}}" class="page-link ">Next</a>
+                    </li>
+                </ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+{{#section 'js'}}
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Menu Toggle Script -->
+    <script>
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+
+    </script>
+{{/section}}
+
+{{/if}}

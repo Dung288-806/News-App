@@ -1,0 +1,62 @@
+.tag-container
+    margin: 16px 0
+
+.add-tag
+    display: flex
+    align-items: center
+    margin-bottom: 16px
+    &>input
+        width: 300px
+        border-radius: 5px
+        margin-right: 8px
+        transition: all 0.4s
+    &>a
+        outline: none
+        text-decoration: none !important
+        background-color: #2ebaae
+        color: #FFF !important
+        padding: 8px 16px
+        border-radius: 5px
+        cursor: pointer
+        transition: all 0.4s
+        &:hover
+            background-color: #40D0C6
+
+.list-tags
+    display: flex
+    flex-wrap: wrap
+
+.tag-item
+    color: #FFF
+    padding: 10px 15px
+    background-color: #2ebaae
+    cursor: pointer
+    margin: 12px 12px 12px 0
+    position: relative
+    transition: all 0.4s
+    &>a
+        display: none
+        position: absolute
+        border-radius: 50%
+        top: 0
+        right: 0
+        height: 16px
+        width: 16px
+        background-color: #eee
+        border-bottom: none
+        cursor: pointer
+        transform: translate(50%, -50%)
+        opacity: 0.7
+        &:hover
+            opacity: 1
+        &>i
+            color: #222
+            font-size: 12px
+    &:hover
+        background-color: #40D0C6
+        &>a
+            display: flex
+            align-items: center
+            justify-content: center
+
+

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Admin - Dashboard</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <!-- Custom styles for this template -->
+    <link href="/public/css/simple-sidebar.css" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+        * {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        img {
+            height: 45px;
+            border-radius: 50%;
+        }
+
+        .btn-set {
+            width: 150px !important;
+        }
+
+        .hiddenBTN {
+            pointer-events: none !important;
+            cursor: default !important;
+        }
+
+        .disabled {
+            pointer-events: none;
+            cursor: default;
+            opacity: 0.5;
+        }
+
+        .action_del {
+            background-color: crimson;
+            border: 0;
+            border-radius: 4px;
+            padding: 7px 13px;
+            color: beige;
+            cursor: pointer;
+        }
+
+        .action_del:hover {
+            opacity: 0.5;
+        }
+
+        .action {
+            display: flex;
+            justify-content: center;
+            align-items: center
+        }
+
+        .action>a {
+            margin-right: 5px;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            text-align: center;
+        }
+
+        .active {
+            background-color: #17a2b8 !important;
+        }
+
+        .item {
+            color: white !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="bg-dark border-right" id="sidebar-wrapper">
+            <div style="width: 100%;" class="btn btn-success sidebar-heading"><i class="fa fa-home"></i>Dashboard</div>
+            <div class="list-group list-group-flush">
+                <a href="/admin/categories"
+                    class="list-group-item list-group-item-action bg-dark item {{#if isCategory}} active {{/if}}  ">Chuyên
+                    Mục</a>
+                <a href="/admin/tags"
+                    class="list-group-item list-group-item-action bg-dark item {{#if isTag}} active {{/if}} ">Tags</a>
+                <a href="/admin/articles"
+                    class="list-group-item list-group-item-action bg-dark item {{#if isArt}} active {{/if}} ">Bài Viết</a>
+                <a class="list-group-item list-group-item-action bg-dark item {{#if isTypeArt}} active {{/if}}"
+                    href="/admin/typeArt">TyperArt</a>
+                <a class="list-group-item list-group-item-action bg-dark item {{#if isStatus}} active {{/if}}" href="/admin/status">Status</a>
+
+                <div class="btn-group">
+                    <button style="width: 100%;" type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Người Dùng
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/admin/writer">Writer</a>
+                        <a class="dropdown-item" href="/admin/editor">Editer</a>
+                        <a class="dropdown-item" href="/admin/subscriber">Subscriber</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom ">
+                <button class="btn btn-primary" id="menu-toggle">Toggle Menu</button>
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                        <li class="nav-item ">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <img src="../../public//img//admin.jpg" alt="">
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{user.username}}
+                            </a>
+                            <form id="frmLogout" action="/account/logout" method="POST"></form>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">Profile</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
+                                    <i class="fa fa-sign-out" aria-hidden="true"></i>
+                                    logout
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="container-fluid mt-3">
+                {{{body}}}
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Menu Toggle Script -->
+    <script>
+        $("#menu-toggle").click(function (e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+
+
+    </script>
+
+</body>
+
+</html>

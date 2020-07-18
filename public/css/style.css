@@ -1,0 +1,145 @@
+body {
+  font-family: Tahoma, Arial, Helvetica, sans-serif;
+  font-size: 16px; }
+
+button:focus {
+  outline: none; }
+
+input {
+  outline: none; }
+
+a:hover {
+  text-decoration: none; }
+
+.hover1:hover {
+  background-color: #EEE; }
+
+.active1:active {
+  background-color: #F5BC04;
+  color: #FFF; }
+
+.button-disabled {
+  pointer-events: none;
+  cursor: default; }
+
+.no-copy {
+  user-select: none; }
+
+.cursor-pointer {
+  cursor: pointer !important; }
+
+.background-none {
+  background: none !important;
+  outline: none !important; }
+  .background-none:focus {
+    background: none !important;
+    outline: none !important; }
+
+.btn-style {
+  outline: none !important; }
+  .btn-style:focus {
+    outline: none !important; }
+
+.search-container {
+  position: relative;
+  margin-right: 12px; }
+
+.input-search {
+  color: #222;
+  width: 120px;
+  box-sizing: border-box;
+  border-radius: 50px;
+  border: 2px solid #F5BC04;
+  font-size: 16px;
+  padding: 8px 12px;
+  transition: width 0.4s; }
+
+.input-search:focus {
+  outline: none;
+  width: 400px; }
+
+.button-search {
+  position: absolute;
+  top: 7px;
+  right: 12px;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer; }
+  .button-search > i {
+    color: #777; }
+  .button-search:hover > i {
+    color: #222; }
+
+.login, .register {
+  color: #222; }
+  .login:hover, .register:hover {
+    text-decoration: none;
+    color: #F5BC04; }
+
+.user-dropdown:hover > .btn {
+  color: #F5BC04 !important;
+  transition: all 0.3s; }
+
+.comment > form {
+  width: 100%;
+  height: 100px;
+  position: relative;
+  margin: 8px 0 24px; }
+  .comment > form > textarea {
+    overflow: hidden;
+    width: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    border-radius: 16px 16px 0 16px;
+    padding: 0px 40px 0px 12px; }
+    .comment > form > textarea:focus {
+      outline: none; }
+  .comment > form > a {
+    position: absolute;
+    right: 16px;
+    bottom: 8px; }
+
+.user-comment {
+  display: flex;
+  margin-bottom: 20px; }
+
+.user-comment-avt {
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: green;
+  margin-right: 8px; }
+
+.comment-content {
+  flex-flow: 1; }
+  .comment-content .name-user {
+    font-weight: bold;
+    color: #04416D; }
+  .comment-content .content {
+    width: 100%; }
+    .comment-content .content > span {
+      display: block; }
+  .comment-content .time-comment {
+    font-size: 12px;
+    font-weight: bold;
+    color: #CCC; }
+
+.card-article {
+  cursor: pointer; }
+
+.img-hover:hover > img {
+  transform: scale(1.2); }
+.img-hover > img {
+  transition: transform 1.5s; }
+
+.paging-active {
+  background-color: #000;
+  color: #FFF; }
+
+nav {
+  z-index: 1000 !important;
+  position: sticky;
+  top: 0; }
+
+/*# sourceMappingURL=style.css.map */
