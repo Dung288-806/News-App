@@ -99,9 +99,6 @@ app.get("/", async function (req, res) {
       0,
       indexOfPage
     );
-
-    console.log("articleMostView_10", articleMostView_10);
-
     const articleMostOutstanding_5 = await articleModel.articleMostOutstanding_5();
     const articleMostOutstanding_1 = articleMostOutstanding_5[0];
     delete articleMostOutstanding_5[0];
