@@ -37,7 +37,9 @@
                     {{#each cateSub}}
                     <tr>
                         <td>{{this.id}}</td>
-                        <td>{{this.name}}</td>
+                        <td>
+                            <a class="btn btn-success" style="width: 200px;" href="/admin/articles?id_cate={{this.id}}">{{this.name}}</a>
+                        </td>
                         <td>{{this.sum}}</td>
                         <td class="action">
                             <a href="/admin/categoriesSub/edit/{{this.id}}" class="btn btn-warning">
@@ -96,9 +98,6 @@
             e.preventDefault();
             $("#wrapper").toggleClass("toggled");
         });
-
-         
-
     </script>
 {{/section}}
 

@@ -306,7 +306,7 @@ module.exports = {
   },
   getCountArticleByIDCateSub: (id) => {
     return db.load(
-      `select count(*) from ${TABLE_ARTICLES}  where CategoriesSub_id = ${id}`
+      `select count(*) as page from ${TABLE_ARTICLES}  where CategoriesSub_id = ${id}`
     );
   },
   getArtNotByTag: (id_tag) => {
@@ -324,6 +324,21 @@ module.exports = {
       `SELECT id, title, write_date, post_date, views, status, Writer_id from articles limit ${LIMIT} offset ${offset}`
     );
   },
+  getListArtByStt: (offset, id_stt) => {
+    return db.load(
+      `SELECT id, title, write_date, post_date, views, status, Writer_id from articles where status = ${id_stt} limit ${LIMIT} offset ${offset}`
+    );
+  },
+  getListArtByType: (offset, id_type) => {
+    return db.load(
+      `SELECT id, title, write_date, post_date, views, status, Writer_id from articles where type = ${id_type} limit ${LIMIT} offset ${offset}`
+    );
+  },
+  getListArtByCateSub: (offset, id_cate) => {
+    return db.load(
+      `SELECT id, title, write_date, post_date, views, status, Writer_id from articles where CategoriesSub_id = ${id_cate} limit ${LIMIT} offset ${offset}`
+    );
+  },
   deletedArt: (condition) => {
     return db.delete(`${TABLE_ARTICLES}`, condition);
   },
@@ -335,6 +350,16 @@ module.exports = {
   countPageOfArt: () => {
     return db.load(
       `SELECT count(*) / ${LIMIT} as page from ${TABLE_ARTICLES} where 1`
+    );
+  },
+  countPageOfArtByStt: (stt) => {
+    return db.load(
+      `SELECT count(*) / ${LIMIT} as page from ${TABLE_ARTICLES} where status = ${stt}`
+    );
+  },
+  countPageOfArtByType: (idType) => {
+    return db.load(
+      `SELECT count(*) / ${LIMIT} as page from ${TABLE_ARTICLES} where type = ${idType}`
     );
   },
   loadAllTypeArt: () => {
@@ -377,5 +402,5 @@ module.exports = {
   },
   insertHistoryUpdateArt: (entity) => {
     return db.add("history_update_art", entity);
-  }
+  },
 };

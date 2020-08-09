@@ -27,7 +27,9 @@
                     {{#each allType}}
                     <tr>
                         <th scope="row">{{this.id}}</th>
-                        <th scope="row">{{this.name}}</th>
+                        <th scope="row">
+                            <a style="width: 150px;" class="btn btn-success" href="/admin/articles?id_type={{this.id}}">{{this.name}}</a>
+                        </th>
                         <th scope="row">{{this.sl}}</th>
                         <td class="action">
                             <a href="/admin/typeArt/edit/{{this.name}}" class="btn btn-warning">

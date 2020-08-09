@@ -27,7 +27,9 @@
                     {{#each allStt}}
                     <tr>
                         <th scope="row">{{this.id}}</th>
-                        <th scope="row">{{this.name}}</th>
+                        <th scope="row">
+                            <a href="/admin/articles?id={{this.id}}" style="width: 170px;" class="btn btn-success" >{{this.name}}</a>
+                        </th>
                         <th scope="row">{{this.sl}}</th>
                         <td class="action">
                             <a href="/admin/status/edit/{{this.name}}" class="btn btn-warning">

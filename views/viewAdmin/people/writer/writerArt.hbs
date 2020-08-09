@@ -74,14 +74,51 @@
                 {{#if isArt}}
                 <ul class="pagination">
                     <li class="page-item {{#if preDis}} disabled {{/if}}">
-                        <a href="/admin/articles?page={{prePage}}" class="page-link" tabindex="-1">Previous</a>
+                        {{#if isIdStatus}}
+                            <a href="/admin/articles?page={{prePage}}&id={{id_status}}" class="page-link" tabindex="-1">Previous</a>
+                            {{else}}
+                                {{#if isIdType}}
+                                    <a href="/admin/articles?page={{prePage}}&id_type={{id_type}}" class="page-link" tabindex="-1">Previous</a>
+                                    {{else}}
+                                        {{#if isIdCate}}
+                                            <a href="/admin/articles?page={{prePage}}&id_cate={{id_cate}}" class="page-link" tabindex="-1">Previous</a>
+                                        {{else}}
+                                            <a href="/admin/articles?page={{prePage}}" class="page-link" tabindex="-1">Previous</a>
+                                        {{/if}}
+                                {{/if}}
+
+                        {{/if}}
                     </li>
                     {{#each numPage}}
                     <li  class="page-item {{#if this.isActive}} active {{/if}}">
-                        <a href="/admin/articles?page={{this.val}}" class="page-link">{{this.val}}</a></li>
+                        {{#if this.isIdStatus}}
+                            <a href="/admin/articles?page={{this.val}}&id={{this.id_status}}" class="page-link">{{this.val}}</a></li>
+                            {{else}}
+                                {{#if this.isIdType}}
+                                    <a href="/admin/articles?page={{this.val}}&id_type={{this.id_type}}" class="page-link" tabindex="-1">{{this.val}}</a>
+                                    {{else}}
+                                        {{#if isIdCate}}
+                                            <a href="/admin/articles?page={{this.val}}&id_cate={{this.id_cate}}" class="page-link" tabindex="-1">{{this.val}}</a>
+                                            {{else}}
+                                            <a href="/admin/articles?page={{this.val}}" class="page-link" tabindex="-1">{{this.val}}</a>
+                                        {{/if}}
+                                {{/if}}
+                        {{/if}}
                     {{/each}}
                     <li class="page-item {{#if nextDis}} disabled {{/if}}">
-                        <a href="/admin/articles?page={{nextPage}}" class="page-link ">Next</a>
+                        {{#if isIdStatus}}
+                            <a href="/admin/articles?page={{nextPage}}&id={{id_status}}" class="page-link" tabindex="-1">Next</a>
+                            {{else}}
+                                {{#if isIdType}}
+                                <a href="/admin/articles?page={{nextPage}}&id_type={{id_type}}" class="page-link" tabindex="-1">Next</a>
+                                {{else}}
+                                    {{#if isIdCate}}
+                                        <a href="/admin/articles?page={{nextPage}}&id_cate={{id_cate}}" class="page-link" tabindex="-1">Next</a>
+                                        {{else}}
+                                        <a href="/admin/articles?page={{nextPage}}" class="page-link" tabindex="-1">Next</a>
+                                    {{/if}}
+                            {{/if}}
+                        {{/if}}
                     </li>
                 </ul>
                 {{else}}

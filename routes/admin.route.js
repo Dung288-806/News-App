@@ -48,6 +48,7 @@ const {
   countPageOfArtByWriterId,
   getListArt,
   countPageOfArt,
+  countPageOfArtByStt,
   loadAllTypeArt,
   getTypeArtByName,
   updateTypeArt,
@@ -60,6 +61,10 @@ const {
   updateStatusArt,
   addStatusOfArt,
   delStatusArtById,
+  getListArtByStt,
+  getListArtByType,
+  countPageOfArtByType,
+  getListArtByCateSub,
 } = require("../models/article.model");
 const {
   ListEditor,
@@ -264,8 +269,8 @@ AdminRoute.get("/categories/:id", authLogin, authRole(3), async (req, res) => {
 
     cateSub.forEach(async (cate) => {
       let sum = await getCountArticleByIDCateSub(cate.id);
-      sum = sum[0]["count(*)"];
-      if (sum == 0) {
+      sum = sum[0]["page"];
+      if (sum === 0) {
         cate.isDel = false;
       } else {
         cate.isDel = true;
@@ -291,11 +296,7 @@ AdminRoute.get("/categories/:id", authLogin, authRole(3), async (req, res) => {
 });
 
 
-AdminRoute.get(
-  "/categoriesSub/edit/:id",
-  authLogin,
-  authRole(3),
-  async (req, res) => {
+AdminRoute.get("/categoriesSub/edit/:id", authLogin, authRole(3), async (req, res) => {
     const id = req.params.id;
     const SubCate = await getCateSubByID(id);
     let listCateParent = await allCateParent();
@@ -313,11 +314,8 @@ AdminRoute.get(
     });
   }
 );
-AdminRoute.post(
-  "/categoriesSub/edit",
-  authLogin,
-  authRole(3),
-  async (req, res) => {
+
+AdminRoute.post("/categoriesSub/edit", authLogin, authRole(3), async (req, res) => {
     try {
       let entity = {};
       entity.name = req.body.name;
@@ -332,11 +330,7 @@ AdminRoute.post(
   }
 );
 
-AdminRoute.post(
-  "/categoriesSub/del",
-  authLogin,
-  authRole(3),
-  async (req, res) => {
+AdminRoute.post("/categoriesSub/del", authLogin, authRole(3), async (req, res) => {
     try {
       const id = req.body.id;
       await DeleteSubCateParentByID({ id });
@@ -364,11 +358,7 @@ AdminRoute.get("/categoriesSub/add/:id", authLogin, authRole(3),
     });
   }
 );
-AdminRoute.post(
-  "/categoriesSub/add",
-  authLogin,
-  authRole(3),
-  async (req, res) => {
+AdminRoute.post( "/categoriesSub/add",  authLogin, authRole(3), async (req, res) => {
     try {
       const entity = req.body;
       await addSubCate(entity);
@@ -510,11 +500,7 @@ AdminRoute.post("/tags/edit", authLogin, authRole(3), async (req, res) => {
   }
 });
 
-AdminRoute.post(
-  "/tags/detail/del",
-  authLogin,
-  authRole(3),
-  async (req, res) => {
+AdminRoute.post("/tags/detail/del", authLogin, authRole(3), async (req, res) => {
     try {
       const condition = {
         Articles_id: +req.body.Articles_id,
@@ -984,17 +970,55 @@ AdminRoute.post("/subscriber/del", authLogin, authRole(3), async (req, res) => {
 
 AdminRoute.get("/articles", authLogin, authRole(3), async (req, res) => {
   try {
-
+    
+    const id_stt = req.query.id;
+    const id_cate = req.query.id_cate;
+    const id_type = req.query.id_type
     const page = +req.query.page || 1;
-    let listArt = await getListArt((page - 1) * LIMIT);
-    let countPage = await countPageOfArt();
+    var listArt = null
+    var countPage = 0
+    const isIdStatus = id_stt === undefined ? false : true;
+    const isIdType = id_type === undefined ? false : true;
+    const isIdCate = id_cate === undefined ? false : true;
+
+    if (id_stt === undefined && id_type === undefined && id_cate === undefined) {
+      listArt = await getListArt((page - 1) * LIMIT);
+      countPage = await countPageOfArt();
+    } else if (id_stt !== undefined) {
+      listArt = await getListArtByStt((page - 1) * LIMIT, id_stt);
+      countPage = await countPageOfArtByStt(id_stt);
+    } else if(id_type !== undefined) {
+      listArt = await getListArtByType((page - 1) * LIMIT, id_type);
+      countPage = await countPageOfArtByType(id_type);
+    } else {
+      listArt = await getListArtByCateSub((page - 1) * LIMIT, id_cate);
+      countPage = await getCountArticleByIDCateSub(id_cate);
+    }
     countPage = Math.ceil(countPage[0]["page"]);
     const numPage = [];
     for (let i = 1; i <= countPage; i++) {
       if (page == i) {
-        numPage.push({ val: i, isActive: true });
+        numPage.push({
+          val: i,
+          isActive: true,
+          id_status: id_stt,
+          isIdStatus,
+          id_type,
+          isIdType,
+          isIdCate,
+          id_cate
+        });
       } else {
-        numPage.push({ val: i, isActive: false });
+        numPage.push({
+          val: i,
+          isActive: false,
+          id_status: id_stt,
+          isIdStatus,
+          id_type,
+          isIdType,
+          isIdCate,
+          id_cate
+        });
       }
     }
     res.render("viewAdmin/people/writer/writerArt", {
@@ -1012,6 +1036,12 @@ AdminRoute.get("/articles", authLogin, authRole(3), async (req, res) => {
       nextPage: page + 1,
       prePage: page - 1,
       isArt: true,
+      id_status: id_stt,
+      isIdStatus,
+      isIdType,
+      id_type,
+      isIdCate,
+      id_cate
     });
   } catch (e) {
     res.render("404", {
@@ -1118,8 +1148,6 @@ AdminRoute.post("/typeArt/edit", authLogin, async (req, res) => {
 });
 AdminRoute.post("/status/edit", authLogin, async (req, res) => {
   try {
-    console.log(req.body);
-    
     await updateStatusArt({ name: req.body.name }, { id: req.body.id });
     res.redirect("/admin/status");
   } catch (e) {
@@ -1138,11 +1166,10 @@ AdminRoute.get("/typeArt/check", authLogin, async (req, res) => {
   res.json(true);
 });
 AdminRoute.get("/status/check", authLogin, async (req, res) => {
-  const name = req.query.name;
-
-  const status = await getStatusByName(name);
-  console.log((status));
   
+  const name = req.query.name;
+  const status = await getStatusByName(name);
+
   if (status.length != 0) {
     return res.json(false);
   }
@@ -1168,6 +1195,8 @@ AdminRoute.post("/typeArt/add", authLogin, async (req, res) => {
     res.redirect("/admin/typeArt");
   } catch (e) {
     console.log(e);
+    res.render("500", { layout: false });
+
   }
 });
 AdminRoute.post("/status/add", authLogin, async (req, res) => {
@@ -1176,6 +1205,7 @@ AdminRoute.post("/status/add", authLogin, async (req, res) => {
     res.redirect("/admin/status");
   } catch (e) {
     console.log(e);
+    res.render("500", { layout: false });
   }
 });
 AdminRoute.post("/typeArt/del", authLogin, async (req, res) => {
@@ -1184,6 +1214,7 @@ AdminRoute.post("/typeArt/del", authLogin, async (req, res) => {
     res.redirect("/admin/typeArt");
   } catch (e) {
     console.log(e);
+    res.render('500', { layout: false })
   }
 });
 AdminRoute.post("/status/del", authLogin, async (req, res) => {
@@ -1192,6 +1223,7 @@ AdminRoute.post("/status/del", authLogin, async (req, res) => {
     res.redirect("/admin/status");
   } catch (e) {
     console.log(e);
+    res.render('500', { layout: false })
   }
 });
 

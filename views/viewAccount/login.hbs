@@ -309,9 +309,8 @@
                 {{#if err}}
                 <div class="alert alert-danger mt-3">{{mes}}</div>
                 {{/if}}
-                {{!-- <input autofocus required name="username" id="username" type="text" placeholder="User" /> --}}
-                <input autofocus required name="email" id="email" type="email" placeholder="Email" />
-                <input required name="password" id="password" type="password" placeholder="Password" />
+                <input autofocus required name="email" id="email" type="email" placeholder="Email" value="{{email}}" />
+                <input required name="password" id="password" type="password" placeholder="Password"/>
                 <button type="submit">Sign In</button>
                 <a href="/account/forgot">Forgot your password?</a>
                 <p style="margin: 0;">Or login with</p>

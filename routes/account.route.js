@@ -13,7 +13,6 @@ router.get("/login", auth, async (req, res) => {
 
 router.post("/login", auth, async (req, res) => {
   try {
-    // const user = await UserModel.CheckUserName(req.body.username);
     const user = await UserModel.CheckEmailLogin(req.body.email);
     if (user.length == 0) {
       return res.render("viewAccount/login", {
@@ -28,6 +27,7 @@ router.post("/login", auth, async (req, res) => {
         layout: false,
         err: true,
         mes: "Invalid password",
+        email: user[0].email,
       });
     }
     delete user[0].password;
