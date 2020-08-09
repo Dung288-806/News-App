@@ -1,10 +1,10 @@
 {
   "mysql": {
     "connectionLimit": 100,
-    "host": "localhost",
+    "host": "us-cdbr-east-02.cleardb.com",
     "port": 3306,
-    "user": "root",
-    "password": "",
-    "database": "newspaper"
+    "user": "be59de00f6e821",
+    "password": "2c38bdaa",
+    "database": "heroku_4f6a92958adcc08"
   }
 }
