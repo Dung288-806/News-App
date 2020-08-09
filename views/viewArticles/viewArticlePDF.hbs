@@ -1,0 +1,71 @@
+<div class="title-article w-100">
+    <img class="w-100" src="/public{{articleByID.big_avt}}">
+    <div class="title-article-content">
+        <h2>
+            {{articleByID.title}}
+        </h2>
+    </div>
+</div>
+<div id="fh5co-single-content d-flex flex-column" class="container-fluid pb-4 pt-4 paddding">
+    <div class="container paddding">
+        <div class="row mx-0 d-flex">
+            <div class="content-article">
+                {{{articleByID.content}}}
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#section 'css'}}
+<style>
+    .title-article {
+        position: relative;
+    }
+
+    .title-article-content {
+        width: 100%;
+        padding: 30px;
+        position: absolute;
+        bottom: 0px;
+        left: 50%;
+        transform: translate(-50%, 0);
+    }
+
+    .title-article-content::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: black;
+        opacity: 0.5;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+    }
+
+    .title-article-content>h2 {
+        text-align: center;
+        display: block;
+        font-size: 72px;
+        color: #FFF;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .title-article-content>span {
+        text-align: center;
+        display: block;
+        font-size: 16px;
+        margin-bottom: 30px;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+    }
+
+    .content-article img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+</style>
+{{/section}}
+{{#section 'js'}}
+{{/section}}

@@ -3,8 +3,8 @@
 
 <head>
     <title>Login</title>
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
-    <link rel="icon" href="https://f0.pngfuel.com/png/982/55/white-laptop-icon-png-clip-art.png">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" <link
+        rel="icon" href="https://f0.pngfuel.com/png/982/55/white-laptop-icon-png-clip-art.png">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
@@ -128,6 +128,7 @@
         .container.right-panel-active .sign-in-container {
             transform: translateX(100%);
         }
+
         @keyframes show {
 
             0%,
@@ -146,6 +147,7 @@
         .container.right-panel-active .overlay-container {
             transform: translateX(-100%);
         }
+
         .container.right-panel-active .overlay {
             transform: translateX(50%);
         }
@@ -198,6 +200,7 @@
             color: #3c97bf;
             text-decoration: none;
         }
+
         .checkCateName {
             display: none;
         }
@@ -209,44 +212,40 @@
             <form method="POST" action="/admin/categories/add" id="frmAddCate">
                 <h1>Thông tin category</h1>
                 {{#if err}}
-                    <div class="alert alert-danger mt-3">{{mes}}</div>
+                <div class="alert alert-danger mt-3">{{mes}}</div>
                 {{/if}}
                 <div class="alert alert-danger mt-3 checkCateName">Chuyên mục đã tồn tại</div>
-                <input autofocus required name="name" id="name" type="text" placeholder="Category name"  />
+                <input autofocus required name="name" id="name" type="text" placeholder="Category name" />
                 <select name="id_editor" id="id_editor" class="form-control form-control-lg">
                     {{#each listEditor}}
-                        <option value="{{this.id}}">{{this.name}}</option>
+                    <option value="{{this.id}}">{{this.name}}</option>
                     {{/each}}
                 </select>
                 <button type="submit">Thêm</button>
                 <a href="/admin/categories"> <i class="fa fa-backward"></i> </a>
             </form>
         </div>
-
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
     <script>
         $('#frmAddCate').on('submit', function (e) {
-                e.preventDefault();
-                isValidate()
-            });
-
-            function isValidate() {
-                 const name = $('#name').val()
-                const id_editor = $('#id_editor').val()
-                $.getJSON(`/admin/categories/check?name=${name}&id_editor=${id_editor}&type=add`, (data) => {
-                    if (data) {
-                        $('#frmAddCate').off('submit').submit()
-                    } else {
-                        $('.checkCateName').show()
-                        $('#name').focus()
-                    }
-                })
-            }
+            e.preventDefault();
+            isValidate()
+        });
+        function isValidate() {
+            const name = $('#name').val()
+            const id_editor = $('#id_editor').val()
+            $.getJSON(`/admin/categories/check?name=${name}&id_editor=${id_editor}&type=add`, (data) => {
+                if (data) {
+                    $('#frmAddCate').off('submit').submit()
+                } else {
+                    $('.checkCateName').show()
+                    $('#name').focus()
+                }
+            })
+        }
     </script>
-
 </body>

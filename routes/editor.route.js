@@ -4,6 +4,9 @@ const categoryModel = require("../models/category.model");
 const tagModel = require("../models/tag.model");
 const articleModel = require("../models/article.model");
 const tag_articleModel = require("../models/tags_articles.model");
+const moment = require("moment");
+const userModel = require("../models/user.model");
+
 const authEditor = require("../middlewares/authEditor.mdw");
 
 require("../middlewares/localEditor.mdw")(router);
@@ -30,6 +33,7 @@ router.get("/list-article", authEditor, async function (req, res) {
         start,
         indexOfPage
       );
+
       let pageItems = [];
       for (let i = 1; i <= nPage; i++) {
         if (
@@ -74,30 +78,33 @@ router.get("/list-article", authEditor, async function (req, res) {
 router.get("/detail", authEditor, async function (req, res) {
   try {
     const Articles_id = req.query.Articles_id - 0 || -1;
+    const idEditor = req.session.authUser.id;
     const checkArManageByEditor = await articleModel.checkArManageByEditor(
       Articles_id,
       req.session.authUser.id
     );
     if (checkArManageByEditor) {
-      const allCategoriesSub = await categoryModel.allCategoriesSub();
+      const allCategoriesSubByEditor = await categoryModel.allCategoriesSubByEditor(
+        idEditor
+      );
       const article = await articleModel.articleByID(Articles_id);
       const tags = await tagModel.allTagsByArticle(Articles_id);
 
       for (let i = 0; i < tags.length; i++) {
         tags[i].tailID = -i;
       }
-      for (let i = 0; i < allCategoriesSub.length; i++) {
-        if (allCategoriesSub[i].id === article.CategoriesSub_id)
-          allCategoriesSub[i].isSelected = true;
+      for (let i = 0; i < allCategoriesSubByEditor.length; i++) {
+        if (allCategoriesSubByEditor[i].id === article.CategoriesSub_id)
+          allCategoriesSubByEditor[i].isSelected = true;
       }
       res.render("viewEditor/detail", {
         Articles_id,
         Articles_avt: article.small_avt,
-        allCategoriesSub,
+        allCategoriesSubByEditor,
         article,
         tags,
-        normalIsSelected: article.type === 0,
-        premiumIsSelected: article.type === 1,
+        normalIsSelected: article.type === 1,
+        premiumIsSelected: article.type === 2,
         articleIsNotManageByEditor: false,
         layout: "editorLayout.hbs",
       });
@@ -116,9 +123,9 @@ router.get("/detail", authEditor, async function (req, res) {
 router.post("/approved", authEditor, async function (req, res) {
   try {
     const Articles_id = req.body.Articles_id;
-    const post_date = new Date(req.body.post_date);
+    const post_date = new Date(req.body.post_date) || new Date();
     const CategoriesSub_id = req.body.CategoriesSub_id;
-    const status = 1;
+    const status = 2;
     const tags_name = req.body.tags_name;
     const entity_article = {
       id: Articles_id,
@@ -139,7 +146,7 @@ router.post("/approved", authEditor, async function (req, res) {
         const infoAddTag = await tagModel.addTag(entity_tagName);
         tags_id.push(infoAddTag.insertId);
       } else {
-        const tag_id = (await tagModel.getTagByName(tags_name[i]))[0].id;
+        const tag_id = (await tagModel.getTagByName(tags_name[i])).id;
         tags_id.push(tag_id);
       }
     }
@@ -162,7 +169,7 @@ router.post("/denied", authEditor, async function (req, res) {
   try {
     const Articles_id = req.body.Articles_id;
     const reason_reject = req.body.reason_reject;
-    const status = 2;
+    const status = 3;
     const entity_article = {
       id: Articles_id,
       status,

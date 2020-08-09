@@ -9,9 +9,11 @@ const {
   authWriter,
   authWriterWithAdmin,
 } = require("../middlewares/authWriter.mdw");
+const { authLogin } = require("../middlewares/auth.mdw");
 const multer = require("multer");
 const fs = require("fs");
-
+const moment = require("moment");
+const userModel = require("../models/user.model");
 const pathIMG = "/uploads/images";
 
 const storage = multer.diskStorage({
@@ -25,9 +27,16 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+router.get("/", authWriterWithAdmin, async function (req, res) {
+  res.render("viewWriter/dashboard", {
+    isWriter: req.session.authUser.role == 1,
+    layout: "writerLayout.hbs",
+  });
+});
+
 router.post(
   "/upload-image-article",
-  authWriter,
+  authWriterWithAdmin,
   upload.array("imgArticle", 30),
   async function (req, res) {
     try {
@@ -50,7 +59,10 @@ router.post(
     }
   }
 );
-router.post("/delete-image-article", authWriter, async function (req, res) {
+router.post("/delete-image-article", authWriterWithAdmin, async function (
+  req,
+  res
+) {
   try {
     const condition_ImageArticle = {
       id: req.body.id_img,
@@ -58,7 +70,7 @@ router.post("/delete-image-article", authWriter, async function (req, res) {
     await image_articleModel.deleteImage_Article(condition_ImageArticle);
     fs.unlink("./public" + req.body.source_img, (err) => {
       if (err) console.log(err);
-      console.log(`xóa ảnh /public${req.body.source_img} cũ thành công`);
+      //console.log(`xóa ảnh /public${req.body.source_img} cũ thành công`);
     });
     res.json({ deleted: true });
   } catch (error) {
@@ -71,6 +83,7 @@ router.get("/postArticle", authWriterWithAdmin, async function (req, res) {
   const allCategoriesSub = await categoryModel.allCategoriesSub();
   res.render("viewWriter/postArticle", {
     allCategoriesSub,
+    isWriter: req.session.authUser.role == 1,
     layout: "writerLayout.hbs",
   });
 });
@@ -90,9 +103,10 @@ router.post(
       const Writer_id = req.session.authUser.id;
       const small_avt = pathIMG + "/" + req.file.filename;
       const big_avt = pathIMG + "/" + req.file.filename;
-      const type = +req.body.typeArticle + 1;
+      const type = req.body.typeArticle;
       const tags_name = req.body.tags_name;
-      const listIdImg = req.body.listIdImg;
+      const listIdImg = req.body.listIdImg || [];
+      const status = 1;
       const entity_article = {
         title,
         sum_content,
@@ -102,6 +116,7 @@ router.post(
         write_date,
         Writer_id,
         type,
+        status,
         CategoriesSub_id,
       };
       const tags_id = [];
@@ -110,6 +125,7 @@ router.post(
           const entity_tagName = {
             tag_name: tags_name[i],
           };
+
           const infoAddTag = await tagModel.addTag(entity_tagName);
           tags_id.push(infoAddTag.insertId);
         } else {
@@ -117,6 +133,7 @@ router.post(
           tags_id.push(tag_id);
         }
       }
+
       const infoAddArticle = await articleModel.addArticle(entity_article);
       const Articles_id = infoAddArticle.insertId;
       for (let i = 0; i < tags_id.length; i++) {
@@ -124,7 +141,7 @@ router.post(
           Tags_id: tags_id[i],
           Articles_id,
         };
-        tag_articleModel.addTags_Articles(entity_tag_article);
+        await tag_articleModel.addTags_Articles(entity_tag_article);
       }
 
       for (const item of listIdImg) {
@@ -135,7 +152,11 @@ router.post(
         await image_articleModel.updateImage_Article(entity_imageArticle);
       }
 
-      res.redirect("/writer/postArticle");
+      if (req.session.authUser.role == 1) {
+        res.redirect("/writer/postArticle");
+      } else {
+        res.redirect("/admin/articles");
+      }
     } catch (error) {
       console.log(error);
       res.render("500", { layout: false });
@@ -162,6 +183,7 @@ router.get("/editArticle", authWriterWithAdmin, async function (req, res) {
     const Articles_id = req.query.Articles_id - 0 || -1;
     const allCategoriesSub = await categoryModel.allCategoriesSub();
     const article = await articleModel.articleByID(Articles_id);
+
     const category = await categoryModel.categoriesSubByID(
       article.CategoriesSub_id
     );
@@ -174,6 +196,7 @@ router.get("/editArticle", authWriterWithAdmin, async function (req, res) {
       if (allCategoriesSub[i].id === article.CategoriesSub_id)
         allCategoriesSub[i].isSelected = true;
     }
+
     res.render("viewWriter/editArticle", {
       Articles_id,
       Articles_avt: article.small_avt,
@@ -182,8 +205,9 @@ router.get("/editArticle", authWriterWithAdmin, async function (req, res) {
       category,
       tags,
       list_image,
-      normalIsSelected: article.type === 0,
-      premiumIsSelected: article.type === 1,
+      normalIsSelected: article.type === 1,
+      premiumIsSelected: article.type === 2,
+      isWriter: req.session.authUser.role == 1,
       layout: "writerLayout.hbs",
     });
   } catch (error) {
@@ -192,65 +216,21 @@ router.get("/editArticle", authWriterWithAdmin, async function (req, res) {
   }
 });
 
-// router.get("/editArticle", authWriter, async function (req, res) {
-//   try {
-//     if (
-//       !(await articleModel.checkArEditByWri(
-//         req.query.Articles_id - 0 || -1,
-//         req.session.authUser.id
-//       ))
-//     ) {
-//       res.redirect(req.headers.referer || "/writer/list-pending-approval");
-//     } else {
-//       const Articles_id = req.query.Articles_id - 0 || -1;
-//       const allCategoriesSub = await categoryModel.allCategoriesSub();
-//       const article = await articleModel.articleByID(Articles_id);
-//       const category = await categoryModel.categoriesSubByID(
-//         article.CategoriesSub_id
-//       );
-//       const tags = await tagModel.allTagsByArticle(Articles_id);
-//       const list_image = await image_articleModel.allImageByArticle(
-//         Articles_id
-//       );
-//       for (let i = 0; i < tags.length; i++) {
-//         tags[i].tailID = -i;
-//       }
-//       for (let i = 0; i < allCategoriesSub.length; i++) {
-//         if (allCategoriesSub[i].id === article.CategoriesSub_id)
-//           allCategoriesSub[i].isSelected = true;
-//       }
-//       res.render("viewWriter/editArticle", {
-//         Articles_id,
-//         Articles_avt: article.small_avt,
-//         allCategoriesSub,
-//         article,
-//         category,
-//         tags,
-//         list_image,
-//         normalIsSelected: article.type === 0,
-//         premiumIsSelected: article.type === 1,
-//         layout: "writerLayout.hbs",
-//       });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     res.render("500", { layout: false });
-//   }
-// });
-
 router.post(
   "/editArticle/update",
   authWriterWithAdmin,
   upload.single("avt"),
   async function (req, res) {
     try {
+      const write_date = new Date();
       const Articles_id = req.body.Articles_id;
       const title = req.body.title;
       const sum_content = req.body.sum_content;
       const CategoriesSub_id = req.body.CategoriesSub_id;
       const content = req.body.content;
       const Writer_id = req.session.authUser.id;
-      const type = +req.body.typeArticle + 1;
+      const status = 1;
+      const type = req.body.typeArticle;
       const tags_name = req.body.tags_name;
       const listIdImg = req.body.listIdImg || [];
       let entity_article = {};
@@ -264,8 +244,10 @@ router.post(
           content,
           small_avt,
           big_avt,
+          status,
           Writer_id,
           type,
+          write_date,
           CategoriesSub_id,
         };
         fs.unlink("./public" + req.body.article_avt, (err) => {
@@ -278,8 +260,10 @@ router.post(
           title,
           sum_content,
           content,
+          status,
           Writer_id,
           type,
+          write_date,
           CategoriesSub_id,
         };
       }
@@ -376,6 +360,7 @@ router.get("/list-approved-unpublished", authWriter, async function (req, res) {
       isEdited: false,
       isEmpty: rows.length === 0,
       hasPostDate: true,
+      isWriter: req.session.authUser.role == 1,
       layout: "writerLayout.hbs",
     });
   } catch (error) {
@@ -428,6 +413,7 @@ router.get("/list-published", authWriter, async function (req, res) {
       isEdited: false,
       isEmpty: rows.length === 0,
       hasPostDate: true,
+      isWriter: req.session.authUser.role == 1,
       layout: "writerLayout.hbs",
     });
   } catch (error) {
@@ -478,6 +464,7 @@ router.get("/list-denied", authWriter, async function (req, res) {
       isEdited: true,
       isEmpty: rows.length === 0,
       isDenied: true,
+      isWriter: req.session.authUser.role == 1,
       layout: "writerLayout.hbs",
     });
   } catch (error) {
@@ -529,6 +516,7 @@ router.get("/list-pending-approval", authWriter, async function (req, res) {
       nextDisable: nPage === 0 || page === nPage,
       isEdited: true,
       isEmpty: rows.length === 0,
+      isWriter: req.session.authUser.role == 1,
       layout: "writerLayout.hbs",
     });
   } catch (error) {

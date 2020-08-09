@@ -12,7 +12,7 @@
                         style="background-color: #E3626F; padding: 12px 24px; color: #FFF; display:none;">
                     </div>
                     <label for="txtPostDate">Chọn thời gian xuất bản</label>
-                    <input type="text" id="txtPostDate" name="post_date" autocomplete="off"></input>
+                    <input type="text" id="txtPostDate" name="post_date" autocomplete="off" required></input>
                     <div class="btn-action">
                         <button type="submit" class="btn btn-approved" onclick="return checkPostDate()"
                             formaction="/editor/approved">Gửi</button>
@@ -56,7 +56,7 @@
                     <div class="form-group w-100">
                         <label for="sCategories" class="float-left">Chuyên mục</label>
                         <select class="form-control" id="sCategories" name="CategoriesSub_id" style="cursor: pointer;">
-                            {{#each allCategoriesSub}}
+                            {{#each allCategoriesSubByEditor}}
                             <option value="{{id}}" {{#if isSelected}}selected{{/if}}>{{name}}</option>
                             {{/each}}
                         </select>
@@ -65,8 +65,8 @@
                         <label for="sTypeCategories" class="float-left">Loại bài báo</label>
                         <select class="form-control" id="sTypeCategories" style="cursor: pointer;" readonly>
                             {{#if article.typeIss}}selected{{/if}}
-                            <option value="0" {{#if normalIsSelected}}selected{{/if}}>Normal</option>
-                            <option value="1" {{#if premiumIsSelected}}selected{{/if}}>Premium</option>
+                            <option value="1" {{#if normalIsSelected}}selected{{/if}}>Normal</option>
+                            <option value="2" {{#if premiumIsSelected}}selected{{/if}}>Premium</option>
                         </select>
                     </div>
                 </div>
@@ -205,11 +205,14 @@
 
     function checkPostDate() {
         const post_date = document.getElementById('txtPostDate').value;
-        const write_date = document.getElementById('txtWriteDate').innerHTML;
-        if (new Date(post_date) < new Date(write_date)) {
+        if (new Date(post_date) <= new Date()) {
             const message = document.getElementById('checkPostDate')
             message.style.display = 'block';
-            message.innerHTML = 'Thời gian xuất bản phải lớn hơn thời gian viết bài!';
+            setTimeout(function () {
+                message.innerHTML = '';
+                message.style.display = 'none';
+            }, 3000)
+            message.innerHTML = 'Thời gian xuất bản phải lớn hơn hoặc bằng thời gian hiện tại!';
             return false;
         }
         else {

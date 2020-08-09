@@ -307,17 +307,16 @@
             <form method="POST" action="/account/login" id="frmLogin">
                 <h1 style="margin-bottom: 16px;">Sign in</h1>
                 {{#if err}}
-                <div class="alert alert-danger mt-3">{{mes}}</div>
+                <span style="color: red;">{{mes}}</span>
                 {{/if}}
-                <input autofocus required name="email" id="email" type="email" placeholder="Email" value="{{email}}" />
-                <input required name="password" id="password" type="password" placeholder="Password"/>
+                <input autofocus required name="email" id="email" type="text" placeholder="Username/Email"
+                    value="{{email}}" />
+                <input required name="password" id="password" type="password" placeholder="Password" />
                 <button type="submit">Sign In</button>
                 <a href="/account/forgot">Forgot your password?</a>
                 <p style="margin: 0;">Or login with</p>
                 <div class="d-flex w-100 justify-content-center align-center">
-                    <a href="#" class="fb btn1 ">
-                        <i class="fa fa-facebook "></i>
-                    </a>
+
                     <a href="/auth/google" class="google btn1">
                         <i class="fa fa-google "></i>
                     </a>

@@ -1,0 +1,125 @@
+{{#section 'css'}}
+    
+
+    <style>
+        .card_container {
+        background-color: #719598;
+        transition: transform linear 0.1s;
+        cursor: pointer;
+    }
+    .cart_info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 !important;
+        
+    }
+    .cart_info i {
+        background-color: aqua;
+        text-align: center;
+        padding: 30px 30px;
+        border-radius: 50%;
+        font-size: 30px
+    }
+    .info_number {
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .info_title {
+        margin-right: 25px;
+    }
+
+    .card_container:hover {
+        box-shadow: 1px 2px 10px #808080cc;
+        transform: translate(-1px)
+    }
+
+    </style>
+{{/section}}
+
+<div class="wrap" id="showCate">
+    <div class="row">
+        <div class="col col-sm-4" onclick="window.location='/admin/subscriber'">
+           <div class="card card_container">
+             <div class="card-body">
+               <blockquote class="blockquote cart_info">
+                 <i class="fa fa-users"></i>
+                 <div class="info_number">
+                    <span class="info_title">+ User</span>
+                    <span style="color: maroon;">{{sumUser}}</span>
+                 </div>
+               </blockquote>
+             </div>
+           </div>
+        </div>
+        <div class="col col-sm-4" onclick="window.location='/admin/articles'">
+           <div class="card card_container">
+             <div class="card-body">
+               <blockquote class="blockquote cart_info">
+                 <i style="background-color: #de815c; color: wheat;"  class="fa fa-book"></i>
+                 <div class="info_number">
+                    <span class="info_title">+ Articles</span>
+                    <span style="color: maroon;">{{sumArt}}</span>
+                 </div>
+               </blockquote>
+             </div>
+           </div>
+        </div>
+        <div class="col col-sm-4" onclick="window.location='/admin/categories'">
+           <div class="card card_container">
+             <div  class="card-body">
+               <blockquote class="blockquote cart_info">
+                 <i style="background-color: #deb25c; color: aliceblue;" class="fa fa-book"></i>
+                 <div class="info_number">
+                    <span class="info_title">+ Categories</span>
+                    <span style="color: maroon;">{{sumCate}}</span>
+                 </div>
+               </blockquote>
+             </div>
+           </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col col-sm-12">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+{{#section 'js'}}
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"> </script>
+
+    
+
+    <script>
+      $(document).ready(() => {
+
+        $.getJSON('/admin/dashboard/data', (data) => {
+          
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const chart = new Chart(ctx, {
+
+              type: 'line',
+              data: {
+                labels: data.arrDate,
+                datasets: [{
+                  label: 'Chart of Views',
+                  backgroundColor: 'rgb(147, 108, 108)',
+                  borderColor: 'rgb(255, 99, 132)',
+                  data: data.arrSl
+                }]
+              }
+            });
+        })
+      })
+
+      
+    </script>
+
+{{/section}}

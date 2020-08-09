@@ -24,21 +24,34 @@ module.exports = {
     return rows[0];
   },
 
+  getTagById: async function (tag_id) {
+    const rows = await db.load(
+      `SELECT * 
+        FROM ${TABLE_TAGS} 
+        WHERE id = ${tag_id} `
+    );
+    return rows[0];
+  },
+
   allTag: function () {
     return db.load(`select * 
                         from ${TABLE_TAGS} `);
   },
 
   tags_15: function () {
-    return db.load(`select * 
-                        from ${TABLE_TAGS} 
+    return db.load(`select t.*
+                        from ${TABLE_TAGS} t join ${TABLE_TAG_ARTICLE} ta
+                          on t.id = ta.Tags_id
+                        order by rand()
                         limit 15`);
   },
 
   allTagsByArticle: function (id) {
-    return db.load(`select t.* from ${TABLE_TAGS} t join ${TABLE_TAG_ARTICLE} t_a on t.id = t_a.tags_id join ${TABLE_ARTICLES} a on t_a.articles_id = a.id where a.id = ${id}`);
+    return db.load(
+      `select t.* from ${TABLE_TAGS} t join ${TABLE_TAG_ARTICLE} t_a on t.id = t_a.tags_id join ${TABLE_ARTICLES} a on t_a.articles_id = a.id where a.id = ${id}`
+    );
   },
-    
+
   getCountPageTagArt: (id) => {
     return db.load(
       `SELECT count(*) / ${LIMIT_PAGE} as page from ${TABLE_TAG_ARTICLE} where Tags_id = ${id} `
@@ -55,7 +68,7 @@ module.exports = {
       `SELECT count(*) FROM ${TABLE_TAG_ARTICLE} WHERE Tags_id = ${id_tag}`
     );
   },
-  
+
   tagArticlesByID: async function (id) {
     const rows = await db.load(
       `select t.tag_name from ${TABLE_TAGS} ta join ${TABLE_TAG_ARTICLE} tar on ta.id = tar.Tags_id where ta.id = ${id}`

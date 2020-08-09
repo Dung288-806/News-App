@@ -23,6 +23,7 @@ const {
   addSubCate,
   countCateByEditor,
   listCateByEditor,
+  countAllCate,
 } = require("../models/category.model");
 
 const {
@@ -65,6 +66,10 @@ const {
   getListArtByType,
   countPageOfArtByType,
   getListArtByCateSub,
+  getArticleByID,
+  updateRejectApprovedArt,
+  countAllArticle,
+  getArtWithDate,
 } = require("../models/article.model");
 const {
   ListEditor,
@@ -78,10 +83,15 @@ const {
   countPageEditor,
   loadSub,
   countPageSub,
+  countAllUser,
+  changeTimeExpired,
+  getTimeExpired,
+  UpdateTimeExpired,
 } = require("../models/user.model");
 
 const { deletedComment } = require("../models/comment.model");
 const { deleteTags_Articles } = require("../models/tags_articles.model");
+const { deleteImage_Article } = require("../models/image_article.model");
 
 const LIMIT = 6;
 
@@ -89,7 +99,6 @@ const AdminRoute = express.Router();
 
 AdminRoute.get("/categories", authLogin, authRole(3), async (req, res) => {
   try {
-
     const page = +req.query.page || 1;
     let countPage = await getCountPage();
     countPage = Math.ceil(countPage[0]["count(*) / 6"]);
@@ -125,9 +134,8 @@ AdminRoute.get("/categories", authLogin, authRole(3), async (req, res) => {
       numPage,
       nextPage: page + 1,
       prePage: page - 1,
-      isHas: allCate.length === 0
+      isHas: allCate.length === 0,
     });
-
   } catch (e) {
     res.render("viewAdmin/Cate/category", {
       layout: false,
@@ -160,7 +168,11 @@ AdminRoute.post("/categories/add", authLogin, authRole(3), async (req, res) => {
   }
 });
 
-AdminRoute.get( "/categories/edit/:id", authLogin, authRole(3), async (req, res) => {
+AdminRoute.get(
+  "/categories/edit/:id",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     try {
       const id = req.params.id;
       const cate = await getCateByID(id);
@@ -188,7 +200,11 @@ AdminRoute.get( "/categories/edit/:id", authLogin, authRole(3), async (req, res)
   }
 );
 
-AdminRoute.post("/categories/edit", authLogin, authRole(3), async (req, res) => {
+AdminRoute.post(
+  "/categories/edit",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     try {
       let cateNeedUpdate = {};
       cateNeedUpdate.name = req.body.name;
@@ -220,11 +236,9 @@ AdminRoute.post("/categories/del", authLogin, authRole(3), async (req, res) => {
 
 AdminRoute.get("/categories/check", async (req, res) => {
   try {
-    console.log('check');
     const cate_id = req.query.cate_id;
     const id_editor = req.query.id_editor;
     const newName = req.query.name;
-    console.log(req.query.type);
     if (req.query.type == "edit") {
       const cate = await getNameCateParentByID(cate_id);
       if (cate[0]["name"] != newName) {
@@ -234,23 +248,20 @@ AdminRoute.get("/categories/check", async (req, res) => {
         if (cate[0]["id_editor"] == id_editor) return res.json(false);
       }
     } else {
-      console.log('voday');
       const cate = await getCateByName(newName);
       if (cate.length != 0) return res.json(false);
     }
-    return res.json(true)
+    return res.json(true);
   } catch (e) {
-    console.log(e + ' ');
+    console.log(e + " ");
     return res.json(false);
   }
 });
 
-
 AdminRoute.get("/categories/:id", authLogin, authRole(3), async (req, res) => {
-  try {  
-
+  try {
     const id = +req.params.id;
-    const page =  +req.query.page || 1;
+    const page = +req.query.page || 1;
     let countPage = await getCountPageCateSub(id);
 
     countPage = Math.ceil(countPage[0]["count(*) / 6"]);
@@ -295,8 +306,11 @@ AdminRoute.get("/categories/:id", authLogin, authRole(3), async (req, res) => {
   }
 });
 
-
-AdminRoute.get("/categoriesSub/edit/:id", authLogin, authRole(3), async (req, res) => {
+AdminRoute.get(
+  "/categoriesSub/edit/:id",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     const id = req.params.id;
     const SubCate = await getCateSubByID(id);
     let listCateParent = await allCateParent();
@@ -315,7 +329,11 @@ AdminRoute.get("/categoriesSub/edit/:id", authLogin, authRole(3), async (req, re
   }
 );
 
-AdminRoute.post("/categoriesSub/edit", authLogin, authRole(3), async (req, res) => {
+AdminRoute.post(
+  "/categoriesSub/edit",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     try {
       let entity = {};
       entity.name = req.body.name;
@@ -330,7 +348,11 @@ AdminRoute.post("/categoriesSub/edit", authLogin, authRole(3), async (req, res) 
   }
 );
 
-AdminRoute.post("/categoriesSub/del", authLogin, authRole(3), async (req, res) => {
+AdminRoute.post(
+  "/categoriesSub/del",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     try {
       const id = req.body.id;
       await DeleteSubCateParentByID({ id });
@@ -341,7 +363,10 @@ AdminRoute.post("/categoriesSub/del", authLogin, authRole(3), async (req, res) =
   }
 );
 
-AdminRoute.get("/categoriesSub/add/:id", authLogin, authRole(3),
+AdminRoute.get(
+  "/categoriesSub/add/:id",
+  authLogin,
+  authRole(3),
   async (req, res) => {
     const idCate = req.params.id;
     let listCateParent = await allCateParent();
@@ -358,7 +383,11 @@ AdminRoute.get("/categoriesSub/add/:id", authLogin, authRole(3),
     });
   }
 );
-AdminRoute.post( "/categoriesSub/add",  authLogin, authRole(3), async (req, res) => {
+AdminRoute.post(
+  "/categoriesSub/add",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     try {
       const entity = req.body;
       await addSubCate(entity);
@@ -410,10 +439,16 @@ AdminRoute.get("/tags", authLogin, authRole(3), async (req, res) => {
     const listTags = await loadAllTags((page - 1) * LIMIT);
     const numPage = [];
     for (let i = 1; i <= countPage; i++) {
-      if (page == i) {
-        numPage.push({ val: i, isActive: true });
-      } else {
-        numPage.push({ val: i, isActive: false });
+      if (
+        i > countPage - 3 ||
+        i <= 3 ||
+        (i >= 3 && i >= page - 3 && i <= page + 3)
+      ) {
+        const item = {
+          val: i,
+          isActive: i == page,
+        };
+        numPage.push(item);
       }
     }
 
@@ -432,8 +467,8 @@ AdminRoute.get("/tags", authLogin, authRole(3), async (req, res) => {
     res.render("viewAdmin/tags/tags", {
       layout: "adminLayout",
       listTags,
-      preDis: page == 1,
-      nextDis: page == countPage,
+      preDis: page == 0 || page == 1,
+      nextDis: page == 0 || page == countPage,
       numPage,
       nextPage: page + 1,
       prePage: page - 1,
@@ -441,15 +476,16 @@ AdminRoute.get("/tags", authLogin, authRole(3), async (req, res) => {
       isHas: listTags.length == 0,
     });
   } catch (e) {
-    console.log(e + ' ');
-    res.render('500', { layout: false })
+    console.log(e + " ");
+    res.render("500", { layout: false });
   }
 });
 
 AdminRoute.post("/tags/del", authLogin, authRole(3), async (req, res) => {
   try {
     await deleteTagsByID({ id: req.body.id });
-    res.redirect( req.headers.referer ||"/admin/tags");
+    await deleteTags_Articles({ Tags_id: req.body.id });
+    res.redirect(req.headers.referer || "/admin/tags");
   } catch (e) {
     console.log(e + " ");
     res.render("500", { layout: false });
@@ -500,7 +536,11 @@ AdminRoute.post("/tags/edit", authLogin, authRole(3), async (req, res) => {
   }
 });
 
-AdminRoute.post("/tags/detail/del", authLogin, authRole(3), async (req, res) => {
+AdminRoute.post(
+  "/tags/detail/del",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     try {
       const condition = {
         Articles_id: +req.body.Articles_id,
@@ -520,48 +560,45 @@ AdminRoute.post("/tags/detail/del", authLogin, authRole(3), async (req, res) => 
 );
 
 AdminRoute.get("/tags/detail/:id", authLogin, authRole(3), async (req, res) => {
-
   try {
     const page = +req.query.page || 1;
-  const id = +req.params.id;
-  const [detailTag, nameOfTag] = await Promise.all([
-    loadAllTagArtByIDTag(id, (page - 1) * LIMIT),
-    findTagByID(id),
-  ]);
-  let countPage = await getCountPageTagArt(id);
-  countPage = Math.ceil(countPage[0]["page"]);
+    const id = +req.params.id;
+    const [detailTag, nameOfTag] = await Promise.all([
+      loadAllTagArtByIDTag(id, (page - 1) * LIMIT),
+      findTagByID(id),
+    ]);
+    let countPage = await getCountPageTagArt(id);
+    countPage = Math.ceil(countPage[0]["page"]);
 
-  const numPage = [];
-  for (let i = 1; i <= countPage; i++) {
-    if (page == i) {
-      numPage.push({ val: i, isActive: true, id });
-    } else {
-      numPage.push({ val: i, isActive: false, id });
+    const numPage = [];
+    for (let i = 1; i <= countPage; i++) {
+      if (page == i) {
+        numPage.push({ val: i, isActive: true, id });
+      } else {
+        numPage.push({ val: i, isActive: false, id });
+      }
     }
-  }
-  res.render("viewAdmin/tags/detailTags", {
-    layout: "adminLayout",
-    isHas: detailTag.length === 0,
-    tagName: nameOfTag[0]["tag_name"],
-    detailTag,
-    preDis: page == 1,
-    nextDis: page == countPage ? true : detailTag.length == 0,
-    numPage,
-    nextPage: page + 1,
-    prePage: page - 1,
-    id,
-  });
+    res.render("viewAdmin/tags/detailTags", {
+      layout: "adminLayout",
+      isHas: detailTag.length === 0,
+      tagName: nameOfTag[0]["tag_name"],
+      detailTag,
+      preDis: page == 1,
+      nextDis: page == countPage ? true : detailTag.length == 0,
+      numPage,
+      nextPage: page + 1,
+      prePage: page - 1,
+      id,
+    });
   } catch (e) {
-     console.log(e + " ");
-     res.render("404", {
-       layout: false,
-       err: true,
-       mes: e + " ",
-     });
+    console.log(e + " ");
+    res.render("404", {
+      layout: false,
+      err: true,
+      mes: e + " ",
+    });
   }
-  
 });
-
 
 AdminRoute.get("/tags/add", authLogin, authRole(3), async (req, res) => {
   res.render("viewAdmin/tags/addTags", {
@@ -605,10 +642,9 @@ AdminRoute.get("/tags/check", async (req, res) => {
   }
 });
 
-
 AdminRoute.get("/writer", authLogin, authRole(3), async (req, res) => {
   try {
-    const page =  +req.query.page || 1;
+    const page = +req.query.page || 1;
     let listWriter = await loadWriter((page - 1) * LIMIT);
     let countPage = await countPageWriter();
     countPage = Math.ceil(countPage[0]["page"]);
@@ -640,7 +676,7 @@ AdminRoute.get("/writer", authLogin, authRole(3), async (req, res) => {
       numPage,
       nextPage: page + 1,
       prePage: page - 1,
-      isHas: listWriter.length === 0
+      isHas: listWriter.length === 0,
     });
   } catch (e) {
     res.render("404", {
@@ -706,7 +742,11 @@ AdminRoute.get("/writer/view/:id", authLogin, authRole(3), async (req, res) => {
   }
 });
 
-AdminRoute.get("/writer/art/id/:id",  authLogin,authRole(3),async (req, res) => {
+AdminRoute.get(
+  "/writer/art/id/:id",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     try {
       const page = +req.query.page || 1;
       const id_writer = req.params.id;
@@ -752,7 +792,6 @@ AdminRoute.get("/writer/art/id/:id",  authLogin,authRole(3),async (req, res) => 
     }
   }
 );
-
 
 AdminRoute.get("/editor", authLogin, authRole(3), async (req, res) => {
   try {
@@ -801,7 +840,11 @@ AdminRoute.get("/editor", authLogin, authRole(3), async (req, res) => {
   }
 });
 
-AdminRoute.get("/editor/register/add",  authLogin, authRole(3),  async (req, res) => {
+AdminRoute.get(
+  "/editor/register/add",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     res.render("viewAdmin/people/addPeople", {
       layout: false,
       editor: true,
@@ -827,56 +870,56 @@ AdminRoute.post("/editor/add", authLogin, authRole(3), async (req, res) => {
 });
 
 AdminRoute.get("/editor/view/:id", authLogin, authRole(3), async (req, res) => {
-    try {
-      const page = +req.query.page || 1;
-      const id = req.params.id;
-      const nameEditor = (await getUserByID(id))[0]["name"];
-      const sum = (await countCateByEditor(id))[0]["sum"];
-      let countPage = sum / LIMIT;
-      countPage = Math.ceil(countPage);
+  try {
+    const page = +req.query.page || 1;
+    const id = req.params.id;
+    const nameEditor = (await getUserByID(id))[0]["name"];
+    const sum = (await countCateByEditor(id))[0]["sum"];
+    let countPage = sum / LIMIT;
+    countPage = Math.ceil(countPage);
 
-      const numPage = [];
-      for (let i = 1; i <= countPage; i++) {
-        if (page == i) {
-          numPage.push({ val: i, isActive: true, id_editor: id });
-        } else {
-          numPage.push({ val: i, isActive: false, id_editor: id });
-        }
+    const numPage = [];
+    for (let i = 1; i <= countPage; i++) {
+      if (page == i) {
+        numPage.push({ val: i, isActive: true, id_editor: id });
+      } else {
+        numPage.push({ val: i, isActive: false, id_editor: id });
       }
-      const allCate = await listCateByEditor(id, (page - 1) * LIMIT);
-
-      allCate.forEach(async (cate) => {
-        let sum = await getCountSubCateByIDCateParent(cate.id);
-        sum = sum[0]["count(*)"];
-        if (sum == 0) {
-          cate.sum = sum;
-          cate.isDel = false;
-        } else {
-          cate.sum = sum;
-          cate.isDel = true;
-        }
-      });
-
-      res.render("viewAdmin/people/editor/showCateByEditor", {
-        layout: "adminLayout",
-        allCate,
-        preDis: page == 1,
-        nextDis: page == countPage,
-        numPage,
-        nextPage: page + 1,
-        prePage: page - 1,
-        id_editor: id,
-        isHas: allCate.length == 0,
-        nameEditor,
-      });
-    } catch (e) {
-      res.render("viewAdmin/people/editor/showCateByEditor", {
-        layout: false,
-        err: true,
-        mes: e + " ",
-      });
     }
-  })
+    const allCate = await listCateByEditor(id, (page - 1) * LIMIT);
+
+    allCate.forEach(async (cate) => {
+      let sum = await getCountSubCateByIDCateParent(cate.id);
+      sum = sum[0]["count(*)"];
+      if (sum == 0) {
+        cate.sum = sum;
+        cate.isDel = false;
+      } else {
+        cate.sum = sum;
+        cate.isDel = true;
+      }
+    });
+
+    res.render("viewAdmin/people/editor/showCateByEditor", {
+      layout: "adminLayout",
+      allCate,
+      preDis: page == 1,
+      nextDis: page == countPage,
+      numPage,
+      nextPage: page + 1,
+      prePage: page - 1,
+      id_editor: id,
+      isHas: allCate.length == 0,
+      nameEditor,
+    });
+  } catch (e) {
+    res.render("viewAdmin/people/editor/showCateByEditor", {
+      layout: false,
+      err: true,
+      mes: e + " ",
+    });
+  }
+});
 
 AdminRoute.post("/editor/del", authLogin, authRole(3), async (req, res) => {
   try {
@@ -907,7 +950,7 @@ AdminRoute.get("/editor/:id", authLogin, authRole(3), async (req, res) => {
 AdminRoute.get("/subscriber", authLogin, authRole(3), async (req, res) => {
   try {
     const page = +req.query.page || 1;
-    const listSub = await loadSub((page - 1) * LIMIT);
+    let listSub = await loadSub((page - 1) * LIMIT);
     let countPage = await countPageSub();
     countPage = Math.ceil(countPage[0]["page"]);
     const numPage = [];
@@ -918,6 +961,16 @@ AdminRoute.get("/subscriber", authLogin, authRole(3), async (req, res) => {
         numPage.push({ val: i, isActive: false });
       }
     }
+
+    listSub.forEach((i) => {
+      i.duration = Math.round(
+        i["duration"] -
+          (new Date(Date.now()) - new Date(i["date_register"])) / (1000 * 60)
+      );
+      i.duration = i.duration <= 0 ? 0 : i.duration;
+      i.page = page
+    });
+
     res.render("viewAdmin/people/subscriber/showSub", {
       layout: "adminLayout",
       listSub,
@@ -934,7 +987,11 @@ AdminRoute.get("/subscriber", authLogin, authRole(3), async (req, res) => {
   }
 });
 
-AdminRoute.get("/subscriber/view/:id", authLogin, authRole(3), async (req, res) => {
+AdminRoute.get(
+  "/subscriber/view/:id",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
     try {
       const subscriber = (await getUserByID(req.params.id))[0];
       subscriber.dob = moment(subscriber.dob).format("L");
@@ -970,24 +1027,18 @@ AdminRoute.post("/subscriber/del", authLogin, authRole(3), async (req, res) => {
 
 AdminRoute.get("/articles", authLogin, authRole(3), async (req, res) => {
   try {
-    
-    const id_stt = req.query.id;
     const id_cate = req.query.id_cate;
-    const id_type = req.query.id_type
+    const id_type = req.query.id_type;
     const page = +req.query.page || 1;
-    var listArt = null
-    var countPage = 0
-    const isIdStatus = id_stt === undefined ? false : true;
+    var listArt = null;
+    var countPage = 0;
     const isIdType = id_type === undefined ? false : true;
     const isIdCate = id_cate === undefined ? false : true;
 
-    if (id_stt === undefined && id_type === undefined && id_cate === undefined) {
+    if (id_type === undefined && id_cate === undefined) {
       listArt = await getListArt((page - 1) * LIMIT);
       countPage = await countPageOfArt();
-    } else if (id_stt !== undefined) {
-      listArt = await getListArtByStt((page - 1) * LIMIT, id_stt);
-      countPage = await countPageOfArtByStt(id_stt);
-    } else if(id_type !== undefined) {
+    } else if (id_type !== undefined) {
       listArt = await getListArtByType((page - 1) * LIMIT, id_type);
       countPage = await countPageOfArtByType(id_type);
     } else {
@@ -1001,23 +1052,19 @@ AdminRoute.get("/articles", authLogin, authRole(3), async (req, res) => {
         numPage.push({
           val: i,
           isActive: true,
-          id_status: id_stt,
-          isIdStatus,
           id_type,
           isIdType,
           isIdCate,
-          id_cate
+          id_cate,
         });
       } else {
         numPage.push({
           val: i,
           isActive: false,
-          id_status: id_stt,
-          isIdStatus,
           id_type,
           isIdType,
           isIdCate,
-          id_cate
+          id_cate,
         });
       }
     }
@@ -1036,12 +1083,10 @@ AdminRoute.get("/articles", authLogin, authRole(3), async (req, res) => {
       nextPage: page + 1,
       prePage: page - 1,
       isArt: true,
-      id_status: id_stt,
-      isIdStatus,
       isIdType,
       id_type,
       isIdCate,
-      id_cate
+      id_cate,
     });
   } catch (e) {
     res.render("404", {
@@ -1052,27 +1097,157 @@ AdminRoute.get("/articles", authLogin, authRole(3), async (req, res) => {
   }
 });
 
+AdminRoute.get("/articles/status", authLogin, authRole(3), async (req, res) => {
+  try {
+    const id_stt = req.query.id;
+    const page = +req.query.page || 1;
+
+    let [listArt, countPage] = await Promise.all([
+      getListArtByStt((page - 1) * LIMIT, id_stt),
+      countPageOfArtByStt(id_stt),
+    ]);
+
+    if (listArt.length === 0) {
+      return res.render("viewAdmin/articles/articlesStatus", {
+        isHasSub: true,
+        layout: "adminLayout",
+      });
+    }
+    countPage = Math.ceil(countPage[0]["page"]);
+    const numPage = [];
+    for (let i = 1; i <= countPage; i++) {
+      if (page == i) {
+        numPage.push({
+          val: i,
+          isActive: true,
+          id_stt,
+        });
+      } else {
+        numPage.push({
+          val: i,
+          isActive: false,
+          id_stt,
+        });
+      }
+    }
+
+    listArt.forEach((e) => {
+      if (e.status === 1) {
+        e.action = "Xác NHận Duyệt";
+        e.isReject = false;
+        e.id_stt = id_stt;
+      } else if (e.status === 2) {
+        e.isReject = true;
+        e.action = "Từ Chối";
+        e.id_stt = id_stt;
+      } else {
+        e.isReject = false;
+        e.action = "Xác Nhận Duyệt";
+        e.id_stt = id_stt;
+      }
+    });
+
+    res.render("viewAdmin/articles/articlesStatus", {
+      layout: "adminLayout",
+      listArt,
+      helpers: {
+        formatDate: function (date) {
+          return moment(date).format("L");
+        },
+      },
+      preDis: page === 1,
+      nextDis: page === countPage,
+      numPage,
+      nextPage: page + 1,
+      prePage: page - 1,
+      id_stt,
+      isStatus: true,
+      isApproved: listArt[0].status === 2,
+      status:
+        listArt[0].status === 2
+          ? "Đã Được Duyệt"
+          : listArt[0].status === 1
+          ? "Chưa Được Duyệt"
+          : "Bị Từ Chối",
+    });
+  } catch (e) {
+    console.log(e + " ");
+    res.render("500", { layout: false });
+  }
+});
+
+AdminRoute.get(
+  "/article/checkDatePost",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
+    try {
+      const date = req.query.date;
+      const id = req.query.id;
+      const art = await getArticleByID(id);
+      if (new Date(date) < new Date(art[0].write_date)) return res.json(false);
+      return res.json(true);
+    } catch (e) {
+      return res.json(false);
+    }
+  }
+);
+
+AdminRoute.post(
+  "/articles/approved",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
+    const { id, post_date, id_stt } = req.body;
+    try {
+      await updateRejectApprovedArt({ post_date, status: 2 }, { id });
+      res.redirect(`/admin/articles/status?id=${id_stt}`);
+    } catch (e) {
+      console.log(e + " ");
+      res.render("500", { layout: false });
+    }
+  }
+);
+AdminRoute.post(
+  "/articles/reject",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
+    const { id, reason_reject, id_stt } = req.body;
+    try {
+      await updateRejectApprovedArt(
+        { reason_reject, status: 3, post_date: null },
+        { id }
+      );
+      res.redirect(`/admin/articles/status?id=${id_stt}`);
+    } catch (e) {
+      console.log(e + " ");
+      res.render("500", { layout: false });
+    }
+  }
+);
+
 AdminRoute.post("/articles/del", authLogin, authRole(3), async (req, res) => {
   try {
     const id = req.body.id;
-    await Promise.all([
-      deleteTags_Articles({ Articles_id: id }),
-      deletedComment({ article_id: id }),
-      deletedArt({ id }),
-    ]);
+    await deleteTags_Articles({ Articles_id: id });
+    await deletedComment({ article_id: id });
+    await deleteImage_Article({ Articles_id: id });
+    await setTimeout(() => deletedArt({ id }), 0);
 
     if (!req.body.id_writer) {
       return res.redirect(`/admin/articles`);
     }
     res.redirect(`/admin/writer/art/id/${req.body.id_writer}`);
   } catch (e) {
+    console.log(e + " ");
     res.render("500", {
       layout: false,
     });
   }
 });
 
-AdminRoute.get("/typeArt", authLogin, async (req, res) => {
+AdminRoute.get("/typeArt", authLogin, authRole(3), async (req, res) => {
   try {
     const allType = await loadAllTypeArt();
     allType.forEach(async (t) => {
@@ -1087,7 +1262,7 @@ AdminRoute.get("/typeArt", authLogin, async (req, res) => {
     res.render("viewAdmin/typeArt/showTypeArt", {
       layout: "adminLayout",
       allType,
-      isTypeArt: true
+      isTypeArt: true,
     });
   } catch (e) {
     res.render("500", {
@@ -1096,7 +1271,7 @@ AdminRoute.get("/typeArt", authLogin, async (req, res) => {
   }
 });
 
-AdminRoute.get("/status", authLogin, async (req, res) => {
+AdminRoute.get("/status", authLogin, authRole(3), async (req, res) => {
   try {
     const allStt = await loadAllStatus();
     allStt.forEach(async (t) => {
@@ -1111,7 +1286,7 @@ AdminRoute.get("/status", authLogin, async (req, res) => {
     res.render("viewAdmin/statusArt/showStatusArt", {
       layout: "adminLayout",
       allStt,
-      isStatus: true
+      isStatus: true,
     });
   } catch (e) {
     res.render("500", {
@@ -1120,23 +1295,33 @@ AdminRoute.get("/status", authLogin, async (req, res) => {
   }
 });
 
-AdminRoute.get("/typeArt/edit/:name", authLogin, async (req, res) => {
-  const name = req.params.name;
-  const typeArt = (await getTypeArtByName(name))[0];
-  res.render("viewAdmin/typeArt/updateTypeArt", {
-    layout: false,
-    typeArt,
-  });
-});
-AdminRoute.get("/status/edit/:name", authLogin, async (req, res) => {
-  const name = req.params.name;
-  const status = (await getStatusByName(name))[0];
-  res.render("viewAdmin/statusArt/updateStatusArt", {
-    layout: false,
-    status,
-  });
-});
-AdminRoute.post("/typeArt/edit", authLogin, async (req, res) => {
+AdminRoute.get(
+  "/typeArt/edit/:name",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
+    const name = req.params.name;
+    const typeArt = (await getTypeArtByName(name))[0];
+    res.render("viewAdmin/typeArt/updateTypeArt", {
+      layout: false,
+      typeArt,
+    });
+  }
+);
+AdminRoute.get(
+  "/status/edit/:name",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
+    const name = req.params.name;
+    const status = (await getStatusByName(name))[0];
+    res.render("viewAdmin/statusArt/updateStatusArt", {
+      layout: false,
+      status,
+    });
+  }
+);
+AdminRoute.post("/typeArt/edit", authLogin, authRole(3), async (req, res) => {
   try {
     await updateTypeArt({ name: req.body.name }, { id: req.body.id });
     res.redirect("/admin/typeArt");
@@ -1146,7 +1331,7 @@ AdminRoute.post("/typeArt/edit", authLogin, async (req, res) => {
     });
   }
 });
-AdminRoute.post("/status/edit", authLogin, async (req, res) => {
+AdminRoute.post("/status/edit", authLogin, authRole(3), async (req, res) => {
   try {
     await updateStatusArt({ name: req.body.name }, { id: req.body.id });
     res.redirect("/admin/status");
@@ -1157,7 +1342,7 @@ AdminRoute.post("/status/edit", authLogin, async (req, res) => {
   }
 });
 
-AdminRoute.get("/typeArt/check", authLogin, async (req, res) => {
+AdminRoute.get("/typeArt/check", authLogin, authRole(3), async (req, res) => {
   const name = req.query.name;
   const typeArt = await getTypeArtByName(name);
   if (typeArt.length != 0) {
@@ -1165,8 +1350,7 @@ AdminRoute.get("/typeArt/check", authLogin, async (req, res) => {
   }
   res.json(true);
 });
-AdminRoute.get("/status/check", authLogin, async (req, res) => {
-  
+AdminRoute.get("/status/check", authLogin, authRole(3), async (req, res) => {
   const name = req.query.name;
   const status = await getStatusByName(name);
 
@@ -1176,30 +1360,29 @@ AdminRoute.get("/status/check", authLogin, async (req, res) => {
   res.json(true);
 });
 
-AdminRoute.get("/typeArt/add", authLogin, async (req, res) => {
+AdminRoute.get("/typeArt/add", authLogin, authRole(3), async (req, res) => {
   res.render("viewAdmin/typeArt/updateTypeArt", {
     layout: false,
     isAdd: true,
   });
 });
-AdminRoute.get("/status/add", authLogin, async (req, res) => {
+AdminRoute.get("/status/add", authLogin, authRole(3), async (req, res) => {
   res.render("viewAdmin/statusArt/updateStatusArt", {
     layout: false,
     isAdd: true,
   });
 });
 
-AdminRoute.post("/typeArt/add", authLogin, async (req, res) => {
+AdminRoute.post("/typeArt/add", authLogin, authRole(3), async (req, res) => {
   try {
     await addTypeOfArt({ name: req.body.name });
     res.redirect("/admin/typeArt");
   } catch (e) {
     console.log(e);
     res.render("500", { layout: false });
-
   }
 });
-AdminRoute.post("/status/add", authLogin, async (req, res) => {
+AdminRoute.post("/status/add", authLogin, authRole(3), async (req, res) => {
   try {
     await addStatusOfArt({ name: req.body.name });
     res.redirect("/admin/status");
@@ -1208,22 +1391,85 @@ AdminRoute.post("/status/add", authLogin, async (req, res) => {
     res.render("500", { layout: false });
   }
 });
-AdminRoute.post("/typeArt/del", authLogin, async (req, res) => {
+AdminRoute.post("/typeArt/del", authLogin, authRole(3), async (req, res) => {
   try {
     await delTypeArtById({ id: req.body.id });
     res.redirect("/admin/typeArt");
   } catch (e) {
     console.log(e);
-    res.render('500', { layout: false })
+    res.render("500", { layout: false });
   }
 });
-AdminRoute.post("/status/del", authLogin, async (req, res) => {
+AdminRoute.post("/status/del", authLogin, authRole(3), async (req, res) => {
   try {
     await delStatusArtById({ id: req.body.id });
     res.redirect("/admin/status");
   } catch (e) {
     console.log(e);
-    res.render('500', { layout: false })
+    res.render("500", { layout: false });
+  }
+});
+
+AdminRoute.get("/dashboard", authLogin, authRole(3), async (req, res) => {
+  const sumUser = (await countAllUser())[0]["sl"];
+  const sumCate = (await countAllCate())[0]["sl"];
+  const sumArt = (await countAllArticle())[0]["sl"];
+
+  res.render("viewAdmin/home", {
+    layout: "adminLayout",
+    sumUser,
+    sumCate,
+    sumArt,
+  });
+});
+
+AdminRoute.get("/dashboard/data", authLogin, authRole(3), async (req, res) => {
+  const dataArtByDate = await getArtWithDate();
+
+  const arrSl = dataArtByDate.reduce((preVal, val) => {
+    preVal.push(val.SL);
+    return preVal;
+  }, []);
+
+  const arrDate = dataArtByDate.reduce((preVal, val) => {
+    preVal.push(moment(val.write_date).format("L"));
+    return preVal;
+  }, []);
+
+  return res.json({
+    arrSl,
+    arrDate,
+  });
+});
+
+AdminRoute.post("/changeTimeExpired", authLogin, authRole(3), async (req, res) => {
+  try {
+    const timeNeedChange = +(await getTimeExpired(req.body.id))[0]["duration"];
+    const date = new Date();
+    
+    const timeRemain = Math.round(
+        timeNeedChange - (new Date(Date.now()) - new Date((await getTimeExpired(req.body.id))[0]["date_register"])) / (1000 * 60)
+      );
+    if (timeRemain <= 0) {
+      await Promise.all([
+        changeTimeExpired(+req.body.timeChange, req.body.id),
+        UpdateTimeExpired(
+          `${moment().format(
+            "YYYY-MM-DD"
+          )} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
+          req.body.id
+        ),
+      ]);
+    } else {
+      const timeToChange = +req.body.timeChange + timeNeedChange;
+      await changeTimeExpired(timeToChange, req.body.id);
+    }
+    res.redirect(`/admin/subscriber?page=${req.body.page}`);
+  } catch (e) {
+    console.log(e + ' ');
+    res.render('500', {
+      layout: false
+    })
   }
 });
 

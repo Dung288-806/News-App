@@ -1,8 +1,16 @@
-<div class="row mb-3">
+<div class="row">
     <div class="col col-sm-12">
-        <a href="/admin/status/add" class="btn btn-success">
-            Add <i class="fa fa-plus-circle"></i>
-        </a>
+
+        <div class="card text-left">
+            <h3 class="card-header">
+                Trạng Thái Bài Viết
+                <a href="/admin/status/add" class="btn btn-success float-right">
+                    Add <i class="fa fa-plus-circle"></i>
+                </a>
+            </h3>
+        </div>
+
+        
     </div>
 </div>
 <div class="wrap" id="showCate">
@@ -18,9 +26,9 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">SumArt</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Tên</th>
+                        <th scope="col">Số Bài Viết</th>
+                        <th scope="col">Hạnh Động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,7 +36,7 @@
                     <tr>
                         <th scope="row">{{this.id}}</th>
                         <th scope="row">
-                            <a href="/admin/articles?id={{this.id}}" style="width: 170px;" class="btn btn-success" >{{this.name}}</a>
+                            <a href="/admin/articles/status?id={{this.id}}" style="width: 170px;" class="btn btn-success" >{{this.name}}</a>
                         </th>
                         <th scope="row">{{this.sl}}</th>
                         <td class="action">

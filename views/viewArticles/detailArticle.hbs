@@ -1,0 +1,122 @@
+<div class="single">
+    <div id="fh5co-title-box" style="background-image: url(/public{{articleByID.big_avt}});"
+        data-stellar-background-ratio="0.5">
+        <div class="overlay"></div>
+        <div class="page-title">
+            <div class="d-flex flex-column align-items-center" style="color: #FFF; margin-bottom: 30px;">
+                <img src="../../public/img/avt-user.png" style="margin-bottom: 4px;">
+                <span style="color: rgba(255, 255, 255, 0.5);">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                    {{articleByID.pseudonym}}
+                </span>
+            </div>
+            <span>
+                <i class="fa fa-clock-o"></i>
+                {{articleByID.datePost}}
+            </span>
+            <h2>
+                {{#if articleByID.isPremium}}
+                <i class="fa fa-star" aria-hidden="true"></i>
+                {{/if}}
+                {{articleByID.title}}
+            </h2>
+        </div>
+    </div>
+    <div id="fh5co-single-content d-flex flex-column" class="container-fluid pb-4 pt-4 paddding">
+        <div class="container paddding">
+            <div class="row mx-0 d-flex">
+                <div class="col-md-8 animate-box d-flex flex-column" data-animate-effect="fadeInLeft">
+                    <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">
+                        {{categoriesSubByID.parentName}} > {{categoriesSubByID.subName}}
+                        {{#if articleByID.isPremium}}
+                        <a href="/articles/download/{{article_id}}" class="btn btn-primary float-right">
+                            <i class="fa fa-download" aria-hidden="true"></i>
+                            Download bài báo
+                        </a>
+                        {{/if}}
+                    </div>
+                    <div class="content-article">
+                        {{{articleByID.content}}}
+                    </div>
+                    <div class="comment" id="comments" onload="alert(1)">
+                        {{> comments}}
+                    </div>
+                </div>
+                <div class="col-md-3 animate-box flex-fill" data-animate-effect="fadeInRight">
+                    <div>
+                        <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Tags</div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="fh5co_tags_all">
+                        {{#each this.allTagsByArticle}}
+                        <a href="/articles/bytag?id={{id}}&page=1" class="fh5co_tagg">{{tag_name}}</a>
+                        {{/each}}
+                    </div>
+                    <div>
+                        <div class="fh5co_heading fh5co_heading_border_bottom pt-3 py-2 mb-4">
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            {{articleByID.views1}} lượt xem</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid pb-4 pt-5">
+    <div class="container animate-box">
+        <div>
+            <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Same category</div>
+        </div>
+        <div class="owl-carousel owl-theme" id="slider2">
+            {{#if articleByCate_5_IsEmpty}}
+            <h3>Không có bài viết cùng chuyên mục</h3>
+            {{/if}}
+            {{#each articleByCate_5}}
+            <div class="item px-2 card-article"
+                onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../isLogin}});">
+                <div class="fh5co_hover_news_img">
+                    <div class="fh5co_news_img"><img src="/public{{small_avt}}" alt="" /></div>
+                    <div>
+                        <a href="javascript:;" class="d-block fh5co_small_post_heading">
+                            <span>
+                                {{#if isPremium}}
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                {{/if}}
+                                {{title}}
+                            </span>
+                        </a>
+                        <div class="d-flex align-items-center">
+                            <div class="box-category" onclick="event.stopPropagation();">
+                                <a href="/articles/bycate?id={{csId}}"
+                                    style="color: #424040; border: solid 1px #424040;">
+                                    {{csName}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="c_g">
+                            <i class="fa fa-clock-o"></i>
+                            {{datePost}} -
+                            <i class="fa fa-comment" aria-hidden="true"></i>
+                            {{nCmt}} -
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            {{views}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+</div>
+
+{{#section 'css'}}
+<style>
+    .content-article img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+</style>
+{{/section}}
+{{#section 'js'}}
+{{/section}}

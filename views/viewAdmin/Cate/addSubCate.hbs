@@ -212,15 +212,14 @@
             <form method="POST" action="/admin/categoriesSub/add" id="frmEditCate">
                 <h1>Add Sub Cate</h1>
                 {{#if err}}
-                    <div class="alert alert-danger mt-3">{{mes}}</div>
+                <div class="alert alert-danger mt-3">{{mes}}</div>
                 {{/if}}
                 <div class="alert alert-danger mt-3 checkCateName">Chuyên mục đã tồn tại</div>
-                <input autofocus required name="name" id="name" type="text"
-                    placeholder="Category name" />
-                
+                <input autofocus required name="name" id="name" type="text" placeholder="Category name" />
+
                 <select name="CategoriesParent_id" class="form-control form-control-lg">
                     {{#each listCateParent}}
-                        <option {{#if this.selected}}  selected {{/if}} value="{{this.id}}">{{this.name}}</option>
+                    <option {{#if this.selected}} selected {{/if}} value="{{this.id}}">{{this.name}}</option>
                     {{/each}}
                 </select>
                 <button type="submit">Add</button>

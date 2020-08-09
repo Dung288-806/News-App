@@ -315,7 +315,8 @@
             <form id="frmRegister" method="POST" action="">
                 <h1 style="margin-bottom: 16px;">Register</h1>
                 <input autofocus required name="name" id="name" type="text" placeholder="FullName" />
-                <span id="checkuser" class="check">User name đã tồn tại</span>
+                <span id="checkuser" class="check">Username đã tồn tại</span>
+                <span id="checkuser1" class="check">Username không được có ký tự đặc biệt</span>
                 <input required name="username" id="username" type="text" placeholder="User" />
                 <span id="checkemail" class="check">Email đã tồn tại</span>
                 <input required name="email" id="email" type="email" placeholder="Email" />
@@ -364,8 +365,7 @@
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
     <script>
         $(document).ready(() => {
             $('.check').hide()
@@ -387,9 +387,12 @@
             const username = $('#username').val()
             const email = $('#email').val()
             $.getJSON(`/account/checkusername?username=${username}&email=${email}`, function (data) {
-            
+
                 if (data == 'user') {
                     $('#checkuser').show()
+                    $('#username').focus()
+                } else if (username.match(/[~<>?_+=!@#$%^&*(){}|;:,.]/) != null || username.split(" ").length > 1) {
+                    $('#checkuser1').show()
                     $('#username').focus()
                 } else if (data == 'email') {
                     $('#checkemail').show()

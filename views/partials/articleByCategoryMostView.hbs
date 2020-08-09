@@ -1,20 +1,35 @@
 {{#each this.articleByCategoryMostView_10}}
 <div>
-    <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">{{name}}</div>
+    <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">{{csName}}</div>
 </div>
-<div class="row pb-4 card-article" onclick="window.location='/articles/detail/{{id}}'">
+<div class="row pb-4 card-article"
+    onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../isLogin}});">
     <div class="col-md-5">
         <div class="fh5co_hover_news_img">
             <div class="fh5co_news_img"><img src="/public{{small_avt}}" alt="" /></div>
         </div>
     </div>
     <div class="col-md-7 d-flex flex-column">
-        <a href="/articles/detail/{{id}}" class="fh5co_magna py-2">
+        <a href="javascript:;" class="fh5co_magna py-2" style="padding: 0 !important;">
+            {{#if isPremium}}
+            <i class="fa fa-star" aria-hidden="true"></i>
+            {{/if}}
             {{title}}
         </a>
-        <a href="/articles/detail/{{id}}" class="fh5co_mini_time py-3">
-            Thomson Smith - April 18,2016
-        </a>
+        <div class="d-flex align-items-center align-center">
+            <a href="javascript:;" class="fh5co_mini_time py-3" style="padding: 8px 0 !important">
+                <i class="fa fa-clock-o"></i>
+                {{datePost}}
+            </a>&nbsp;-&nbsp;
+            <a href="javascript:;" class="fh5co_mini_time py-3" style="padding: 8px 0 !important">
+                <i class="fa fa-comment" aria-hidden="true"></i>
+                {{nCmt}}
+            </a>&nbsp;-&nbsp;
+            <a href="javascript:;" class="fh5co_mini_time py-3" style="padding: 8px 0 !important">
+                <i class="fa fa-eye" aria-hidden="true"></i>
+                {{views}}
+            </a>
+        </div>
         <div class="fh5co_consectetur">
             {{sum_content}}
         </div>

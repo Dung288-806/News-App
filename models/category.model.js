@@ -12,6 +12,14 @@ module.exports = {
              from ${TABLE_CATEGORIESSUB}`
     );
   },
+  allCategoriesSubByEditor: function (idEditor) {
+    return db.load(
+      `select cs.* 
+             from ${TABLE_CATEGORIESSUB} cs join ${TABLE_CATEGORIESPARENT} cp
+              on cs.CategoriesParent_id = cp.id
+             where cp.id_editor = ${idEditor}`
+    );
+  },
   cateParentByCateSub: async function (categorySub_id) {
     const rows = await db.load(
       `select csub.name as 'subName', cparent.name as 'parentName' 
@@ -119,6 +127,11 @@ module.exports = {
       `SELECT count(*) / ${LIMIT_PAGE} from ${TABLE_CATEGORIESPARENT} where 1`
     );
   },
+  countAllCate: () => {
+    return db.load(
+      `SELECT count(*) as sl from ${TABLE_CATEGORIESPARENT} where 1`
+    );
+  },
   getCountPageCateSub: (id) => {
     return db.load(
       `select count(*) / ${LIMIT_PAGE} from ${TABLE_CATEGORIESSUB} csub where csub.CategoriesParent_id = ${id}`
@@ -130,9 +143,7 @@ module.exports = {
     );
   },
   getNameCateParentByID: (id) => {
-    return db.load(
-      `select * from ${TABLE_CATEGORIESPARENT} where id = ${id}`
-    );
+    return db.load(`select * from ${TABLE_CATEGORIESPARENT} where id = ${id}`);
   },
   getCountSubCateByIDCateParent: (id) => {
     return db.load(
@@ -173,5 +184,5 @@ module.exports = {
     return db.load(
       `select * from ${TABLE_CATEGORIESSUB} where id = ${id} and CategoriesParent_id = ${id_cateParent}`
     );
-  },
+  }
 };

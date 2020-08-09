@@ -127,19 +127,25 @@
             transform: translateX(100%);
         }
 
-        {{!-- .sign-up-container {
-            left: 0;
-            width: 50%;
-            opacity: 0;
-            z-index: 1;
-        }
+            {
+                {
+                 !-- .sign-up-container {
+                    left: 0;
+                    width: 50%;
+                    opacity: 0;
+                    z-index: 1;
+                }
 
-        .container.right-panel-active .sign-up-container {
-            transform: translateX(100%);
-            opacity: 1;
-            z-index: 5;
-            animation: show 0.6s;
-        } --}}
+                .container.right-panel-active .sign-up-container {
+                    transform: translateX(100%);
+                    opacity: 1;
+                    z-index: 5;
+                    animation: show 0.6s;
+                }
+
+                --
+            }
+        }
 
         @keyframes show {
 
@@ -266,10 +272,11 @@
             color: #3c97bf;
             text-decoration: none;
         }
+
         #alertConfirm {
             display: none;
         }
-        
+
         .check {
             color: #FF416C;
             padding: 3px 77px;
@@ -309,6 +316,30 @@
             width: 20%;
             border-right: 1px solid #333;
         }
+
+        #oldPassCheck {
+            display: none;
+            color: #FF4B2B;
+        }
+
+        .btn-come-back,
+        .btn-come-back:hover {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #000
+        }
+
+        button {
+            cursor: pointer;
+            outline: none;
+        }
+
+        a,
+        a:hover {
+            cursor: pointer;
+            text-decoration: none;
+        }
     </style>
 
 <body>
@@ -317,11 +348,18 @@
             <form method="POST" action="/account/changepass" id="frmChange">
                 <h1>CHANGE PASS</h1>
                 {{#if err}}
-                    <div class="alert alert-danger mt-3" id="alertConfirm">{{mes}}</div>
+                <div class="alert alert-danger mt-3" id="alertConfirm">{{mes}}</div>
                 {{/if}}
                 <div class="alert alert-danger mt-3" id="alertConfirm">Invalid confirm pass</div>
+                <span {{#if isForgot}} style="display: none;" {{/if}} id="oldPassCheck">Nhập Sai Password</span>
+                <input {{#if isForgot}} style="display: none;" {{/if}} id="txtOldPass" type="password"
+                    name="oldPassword" required placeholder="Old Password">
+                <input {{#if isForgot}} style="display: none;" {{/if}} type="hidden" name="change" value="change">
                 <span id="checkpass" class="check">Pass tối thiếu 6. Chứa ít nhất 1 số và 1 ký tự hoa và thường</span>
-                <input required onkeyup="checkPassword()" name="password" id="txtMatKhau" type="password" placeholder="Password" />
+                <input required onkeyup="checkPassword()" name="password" id="txtMatKhau" type="password"
+                    placeholder="Password" />
+
+                <input required name="confirm" id="confirm" type="password" placeholder="Confirm" />
                 <div class="progressBar-container">
                     <span>Độ bảo mật:</span>
                     <div class="progressBar">
@@ -336,45 +374,51 @@
                     </div>
                     <span id="progressBar-mess"></span>
                 </div>
-                <input  required name="confirm" id="confirm" type="password" placeholder="Confirm" />
                 <input name="id_user" type="hidden" value="{{id}}" />
                 <button type="submit">Confirm</button>
-                <div onclick="window.location='/'"
-                    style="color: rgb(22, 20, 22); position: absolute; top: 10px; left: 10px; margin: 0; cursor: pointer; z-index: 1"/>
-                   <h3>◀</h3>
-                </div>
-                <a href="/account/login">Login</a>
+                <a href="/account/profile" class="btn-come-back">
+                    <h3>◀</h3>
+                </a>
             </form>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script>
-    $('#frmChange').on('submit', function (e) {
-        e.preventDefault();
-        isValidate()
-    });
-    function isValidate() {
-        const pass = $('#txtMatKhau').val()
-        const cf = $('#confirm').val()
-        alert(pass)
-        alert(cf)
-        if(pass === cf) {
-            
-            if(invalidPass())
-                $('#frmChange').off('submit').submit()
-            else {
-                $('#checkpass').show()
-                $('#txtMatKhau').focus()
-            }
-        }else {
-            $('#alertConfirm').show()
-            $('#confirm').focus()
-        }
-    }
 
-     function invalidPass() {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+        $('#frmChange').on('submit', function (e) {
+            e.preventDefault();
+            isValidate()
+        });
+
+        function isValidate() {
+            const oldPass = $('#txtOldPass').val()
+            $.getJSON(`/account/compareOldPass/${oldPass}`, (data) => {
+                if (data) {
+                    const pass = $('#txtMatKhau').val()
+                    const cf = $('#confirm').val()
+                    if (pass === cf) {
+
+                        if (invalidPass())
+                            $('#frmChange').off('submit').submit()
+                        else {
+                            $('#checkpass').show()
+                            $('#txtMatKhau').focus()
+                        }
+                    } else {
+                        $('#alertConfirm').show()
+                        $('#confirm').focus()
+                    }
+                } else {
+                    $("#oldPassCheck").show()
+                    $('#txtOldPass').focus()
+                }
+            })
+        }
+
+        function invalidPass() {
             const rex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/
             const pass = document.getElementById('txtMatKhau').value;
 

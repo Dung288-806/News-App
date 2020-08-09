@@ -24,13 +24,16 @@ module.exports = function (app) {
     } else {
       res.locals.localCategories = cache.get(GLOBAL_CATEGOERIES);
     }
-
     next();
   });
 
   app.use((req, res, next) => {
     if (req.session.authUser) {
       res.locals.user = req.session.authUser;
+      res.locals.isSubcriber = req.session.authUser.role == 0;
+      res.locals.isWriter = req.session.authUser.role == 1;
+      res.locals.isEditor = req.session.authUser.role == 2;
+      res.locals.isAdmin = req.session.role == 3;
       res.locals.isLogin = true;
     } else {
       res.locals.isLogin = false;

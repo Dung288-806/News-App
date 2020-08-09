@@ -7,10 +7,21 @@
 
 {{else}}
 <div class="row">
+
     <div class="col col-sm-12">
-        <a href="/admin/tags/add" class="btn btn-success mb-3">
-            Add <i class="fa fa-plus-circle"></i>
-        </a>
+        <div class="card text-left">
+            <h3 class="card-header">
+                Tags
+                <a href="/admin/tags/add" class="btn btn-success float-right">
+                    Add <i class="fa fa-plus-circle"></i>
+                </a>
+            </h3>
+        </div>
+    </div>
+
+
+    <div class="col col-sm-12">
+
     </div>
 </div>
 <div class="wrap" id="showTag">
@@ -29,16 +40,19 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Sum Article</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Tên</th>
+                        <th scope="col">Số Bài Viết</th>
+                        <th scope="col">Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>
                     {{#each listTags}}
                     <tr>
                         <th scope="row">{{this.id}}</th>
-                        <td><a class="btn btn-info btn-set" href="/admin/tags/detail/{{this.id}}">{{this.tag_name}}</a>
+                        <td>
+                            <a class="btn btn-info btn-set" style="min-width: 70%;" href="/admin/tags/detail/{{this.id}}">
+                                {{this.tag_name}}
+                            </a>
                         </td>
                         <td>{{this.sum}}</td>
                         <td class="action">
@@ -70,7 +84,7 @@
                     </li>
                     {{#each numPage}}
                     <li class="page-item {{#if this.isActive}} active {{/if}}">
-                    <a href="/admin/tags?page={{this.val}}" class="page-link">{{this.val}}</a></li>
+                        <a href="/admin/tags?page={{this.val}}" class="page-link">{{this.val}}</a></li>
                     {{/each}}
                     <li class="page-item {{#if nextDis}} disabled {{/if}}">
                         <a href="/admin/tags?page={{nextPage}}" class="page-link ">Next</a>
@@ -82,19 +96,5 @@
 
 </div>
 
-{{#section 'js'}}
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<!-- Menu Toggle Script -->
-<script>
-    $("#menu-toggle").click(function (e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-</script>
-{{/section}}
 
 {{/if}}
-

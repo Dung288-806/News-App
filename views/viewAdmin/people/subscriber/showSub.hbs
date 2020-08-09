@@ -6,9 +6,10 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Name</th>
+                        <th scope="col">Tên</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Thời Hạn Còn Lại</th>
+                        <th scope="col">Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -18,6 +19,39 @@
                         <th scope="row">{{this.name}}</th>
 
                         <th scope="row">{{this.email}}</th>
+                        <th scope="row">
+                            <span class="mr-3" >{{this.duration}} Phút</span>
+                            <button type="button" class="btn btn-success" data-toggle="modal"
+                                data-target="#exampleModalCenter_{{this.id}}">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                        </th>
+                            <div class="modal fade" id="exampleModalCenter_{{this.id}}" tabindex="-1" role="dialog"
+                                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLongTitle">CHANGE TIME</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form action="/admin/changeTimeExpired" method="POST" id="formApproved">
+                                            <div class="modal-body">
+                                                <input type="hidden" name="id" value="{{this.id}}">
+                                                <input type="hidden" name="page" value="{{this.page}}">
+                                                <input class="form-control" name="timeChange" type="number" required>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="summit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </form>
+                            
+                                    </div>
+                                </div>
+                            </div>
+
                         <td class="action">
                             <a href="/admin/subscriber/view/{{this.id}}" class="btn btn-warning">
                                 <i class="fa fa-eye"></i>
@@ -55,15 +89,3 @@
 
 </div>
 
-{{#section 'js'}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-<script>
-    $("#menu-toggle").click(function (e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-
-</script>
-{{/section}}

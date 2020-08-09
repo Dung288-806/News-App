@@ -2,7 +2,8 @@ const authLogin = (req, res, next) => {
   if (req.session.authUser) {
     next();
   } else {
-    res.redirect(req.headers.referer || "/");
+    res.redirect("/account/login");
+    //res.redirect(req.headers.referer || "/");
   }
 };
 

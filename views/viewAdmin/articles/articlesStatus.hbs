@@ -1,0 +1,180 @@
+{{#if isHasSub }}
+<div class="alert alert-danger">
+    Dont have any articles
+</div>
+
+
+{{else}}
+<div class="wrap " id="showWriterArt">
+    <div class="row">
+        <div class="col col-sm-12">
+            <div class="card text-left">
+                <h3 class="card-header">
+                    {{status}}
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col col-sm-12">
+
+            <table style="text-align: center;" class="table table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Tiêu Đề</th>
+                        {{#if isApproved}}
+
+                        <th scope="col">Ngày Đăng</th>
+                        {{else}}
+
+                        <th scope="col">Ngày Viết</th>
+                        {{/if}}
+                        <th scope="col">Lượt Xem</th>
+                        <th scope="col">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each listArt}}
+                    <tr>
+                        <td>{{this.id}}</td>
+                        <td>{{this.title}}</td>
+                        {{#if this.isReject}}
+
+                        <td>{{formatDate this.post_date}}</td>
+                        {{else}}
+                        <td>{{formatDate this.write_date}}</td>
+                        {{/if}}
+                        <td>{{this.views}}</td>
+                        <td class="action">
+
+                            <button type="button"
+                                class="btn {{#if this.isReject}} btn-danger {{else}} btn-success {{/if}}"
+                                data-toggle="modal" data-target="#exampleModalCenter_{{this.id}}">
+                                <i class="fa fa-edit"></i> {{this.action}}
+                            </button>
+                        </td>
+
+                        <div class="modal fade" id="exampleModalCenter_{{this.id}}" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        {{#if this.isReject}}
+
+                                        <h5 class="modal-title" id="exampleModalLongTitle">Reject</h5>
+                                        {{else}}
+                                        <h5 class="modal-title" id="exampleModalLongTitle">Approved</h5>
+
+                                        {{/if}}
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {{#if this.isReject}}
+                                    <form action="/admin/articles/reject" method="POST" id="formReject">
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id" id="id_Art" value="{{this.id}}">
+                                            <input type="hidden" name="id_stt" value="{{this.id_stt}}">
+                                            <textarea placeholder="Lý do từ chối..." class="form-control"
+                                                name="reason_reject" rows="3" required></textarea>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="summit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                    {{else}}
+                                    <form action="/admin/articles/approved" method="POST" id="formApproved">
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id" id="id_Art" value="{{this.id}}">
+                                            <input type="hidden" name="id_stt" value="{{this.id_stt}}">
+
+                                            <span id="alert-err"
+                                                style="display: none; color: red; text-align: center;">Ngày post phải
+                                                nhỏ hơn ngày
+                                                viết</span>
+                                            <input class="form-control" name="post_date" type="datetime-local" id="txtDatePost"
+                                                required>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="summit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                    {{/if}}
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="row footer">
+        <div class="col col-sm-12">
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="page-item {{#if preDis}} disabled {{/if}}">
+                        <a href="/admin/articles/status?page={{prePage}}&id={{id_stt}}" class="page-link"
+                            tabindex="-1">Previous</a>
+                    </li>
+                    {{#each numPage}}
+                    <li class="page-item {{#if this.isActive}} active {{/if}}">
+                        <a href="/admin/articles/status?page={{this.val}}&id={{this.id_stt}}"
+                            class="page-link">{{this.val}}</a></li>
+                    {{/each}}
+                    <li class="page-item {{#if nextDis}} disabled {{/if}}">
+                        <a href="/admin/articles/status?page={{nextPage}}&id={{id_stt}}" class="page-link"
+                            tabindex="-1">Next</a>
+
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+
+{{#section "js"}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+<script>
+
+   
+
+    $(document).ready(function () {
+
+        $("#formApproved").on("submit", function (e) {
+            e.preventDefault();
+            isValidate();
+        });
+    });
+
+    function isValidate() {
+
+        const datePost = $("#txtDatePost").val();
+        const id = $("#id_Art").val();
+        $.getJSON(`/admin/article/checkDatePost?date=${datePost}&id=${id}`, (data) => {
+            if (!data) {
+                $('#alert-err').show()
+                $("#formApproved").off('submit')
+            }
+            $("#formApproved").off('submit').on('submit')
+        });
+    }
+</script>
+
+{{/section}}
+
+
+{{/if}}

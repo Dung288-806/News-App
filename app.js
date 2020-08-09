@@ -2,7 +2,9 @@ require("dotenv").config({ path: __dirname + "/.env" });
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
+const path = require("path");
 const categoryRouter = require("./routes/articleByCategory.route");
+const tagRouter = require("./routes/articleByTag.route");
 const accountRouter = require("./routes/account.route");
 const articleRouter = require("./routes/article.route");
 const writerRouter = require("./routes/writer.route");
@@ -11,25 +13,28 @@ const articleModel = require("./models/article.model");
 const tagModel = require("./models/tag.model");
 const AdminRoute = require("./routes/admin.route");
 const searchRouter = require("./routes/search.route");
-const AuthRouter = require('./middlewares/authPassPort')
-const passPortGoogle = require('./config/passport')
-const passport = require('passport')
+const AuthRouter = require("./middlewares/authPassPort");
+const passPortGoogle = require("./config/passport");
+const passport = require("passport");
 const app = express();
 
 require("./middlewares/view.mdw")(app);
 require("./middlewares/session.mdw")(app);
 require("./middlewares/local.mdw")(app);
 app.use("/public", express.static("public"));
-
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// app.use(express.static(path.join(__dirname, "public")));
 app.use(passport.initialize());
 app.use(passport.session());
-passPortGoogle(passport)
+passPortGoogle(passport);
 
 app.use("/articles", categoryRouter);
+app.use("/articles", tagRouter);
 app.use("/articles", articleRouter);
+app.use("/articles", tagRouter);
 app.use("/account", accountRouter);
 app.use("/writer", writerRouter);
 app.use("/editor", editorRouter);
@@ -49,13 +54,13 @@ app.get("/articleByCategoryMostView-paging/:page", async function (req, res) {
     const indexOfPage = 2;
     const page = req.params.page - 0 || 1;
     const start = (page - 1) * indexOfPage;
-    const articleByCategoryMostView_10 = await articleModel.articleByCategryMostView_10(
+    const articleByCategoryMostView_10 = await articleModel.articleByCategryMostNew_10(
       start,
       indexOfPage
     );
 
-    const n = await articleModel.countArticleByCategryMostView_10();
-    const nPage = Math.ceil(n / indexOfPage);
+    const n = await articleModel.countArticleByCategryMostNew_10();
+    const nPage = Math.ceil(n / indexOfPage) + 2;
     let pageItems = [];
     for (let i = 1; i <= nPage; i++) {
       const item = {
@@ -90,17 +95,20 @@ app.get("/", async function (req, res) {
     const indexOfPage = 2;
     const articleMostView_10 = await articleModel.articleMostView_10();
     const articleNew_10 = await articleModel.articleNew_10();
-    const articleByCategoryMostView_10 = await articleModel.articleByCategryMostView_10(
+    const articleByCategoryMostView_10 = await articleModel.articleByCategryMostNew_10(
       0,
       indexOfPage
     );
+
+    console.log("articleMostView_10", articleMostView_10);
+
     const articleMostOutstanding_5 = await articleModel.articleMostOutstanding_5();
     const articleMostOutstanding_1 = articleMostOutstanding_5[0];
     delete articleMostOutstanding_5[0];
     const articleMostOutstanding_4 = articleMostOutstanding_5;
     const tags_15 = await tagModel.tags_15();
 
-    const n = await articleModel.countArticleByCategryMostView_10();
+    const n = await articleModel.countArticleByCategryMostNew_10();
     const nPage = Math.ceil(n / indexOfPage);
     let page = 1;
     let pageItems = [];

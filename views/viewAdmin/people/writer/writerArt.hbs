@@ -1,12 +1,15 @@
-
-
 {{#if isArt}}
 
-<div class="row mb-3">
+<div class="row">
     <div class="col col-sm-12">
-        <a href="/writer/postArticle" class="btn btn-success">
-            Add <i class="fa fa-plus-circle"></i>
-        </a>
+        <div class="card text-left">
+            <h3 class="card-header">
+                Bài Viết
+                <a href="/writer/postArticle" class="btn btn-success float-right">
+                    Add <i class="fa fa-plus-circle"></i>
+                </a>
+            </h3>
+        </div>  
     </div>
 </div>
 {{/if}}
@@ -24,14 +27,14 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Title</th>
+                        <th scope="col">Tiêu Đề</th>
                         {{#if isArt}}
                         <th scope="col">Writer</th>
                         {{/if}}
-                        <th scope="col">Post Date</th>
-                        <th scope="col">Views</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Ngày Viết</th>
+                        <th scope="col">Lượt Xem</th>
+                        <th scope="col">Trạng Thái</th>
+                        <th scope="col">Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,7 +45,7 @@
                         {{#if this.Writer_id}}
                         <th scope="col"><a href="/admin/writer/view/{{this.Writer_id}}">{{this.Writer_id}}</a></th>
                         {{/if}}
-                        <td>{{formatDate this.post_date}}</td>
+                        <td>{{formatDate this.write_date}}</td>
                         <td>{{this.views}}</td>
                         <td>{{this.status}}</td>
                         <td class="action">
@@ -74,9 +77,7 @@
                 {{#if isArt}}
                 <ul class="pagination">
                     <li class="page-item {{#if preDis}} disabled {{/if}}">
-                        {{#if isIdStatus}}
-                            <a href="/admin/articles?page={{prePage}}&id={{id_status}}" class="page-link" tabindex="-1">Previous</a>
-                            {{else}}
+                       
                                 {{#if isIdType}}
                                     <a href="/admin/articles?page={{prePage}}&id_type={{id_type}}" class="page-link" tabindex="-1">Previous</a>
                                     {{else}}
@@ -87,13 +88,10 @@
                                         {{/if}}
                                 {{/if}}
 
-                        {{/if}}
                     </li>
                     {{#each numPage}}
                     <li  class="page-item {{#if this.isActive}} active {{/if}}">
-                        {{#if this.isIdStatus}}
-                            <a href="/admin/articles?page={{this.val}}&id={{this.id_status}}" class="page-link">{{this.val}}</a></li>
-                            {{else}}
+                        
                                 {{#if this.isIdType}}
                                     <a href="/admin/articles?page={{this.val}}&id_type={{this.id_type}}" class="page-link" tabindex="-1">{{this.val}}</a>
                                     {{else}}
@@ -103,12 +101,10 @@
                                             <a href="/admin/articles?page={{this.val}}" class="page-link" tabindex="-1">{{this.val}}</a>
                                         {{/if}}
                                 {{/if}}
-                        {{/if}}
+             
                     {{/each}}
                     <li class="page-item {{#if nextDis}} disabled {{/if}}">
-                        {{#if isIdStatus}}
-                            <a href="/admin/articles?page={{nextPage}}&id={{id_status}}" class="page-link" tabindex="-1">Next</a>
-                            {{else}}
+                     
                                 {{#if isIdType}}
                                 <a href="/admin/articles?page={{nextPage}}&id_type={{id_type}}" class="page-link" tabindex="-1">Next</a>
                                 {{else}}
@@ -117,8 +113,8 @@
                                         {{else}}
                                         <a href="/admin/articles?page={{nextPage}}" class="page-link" tabindex="-1">Next</a>
                                     {{/if}}
-                            {{/if}}
-                        {{/if}}
+                  
+                                {{/if}}
                     </li>
                 </ul>
                 {{else}}
@@ -144,17 +140,3 @@
 
 
 </div>
-
-{{#section 'js'}}
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<!-- Menu Toggle Script -->
-<script>
-    $("#menu-toggle").click(function (e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-</script>
-{{/section}}

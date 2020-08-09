@@ -1,9 +1,9 @@
 const db = require("../utils/db");
 
-const TABLE_USER = 'user'
-const TABLE_ART = 'articles'
+const TABLE_USER = "user";
+const TABLE_ART = "articles";
 const TABLE_CATEPARENT = "categoriesparent";
-const LIMIT = 6
+const LIMIT = 6;
 
 module.exports = {
   add: (entity) => {
@@ -11,34 +11,48 @@ module.exports = {
   },
   patch: function (entity) {
     const condition = {
-      id: entity.id
-    }
+      id: entity.id,
+    };
     delete entity.id;
     return db.patch(TABLE_USER, entity, condition);
   },
   del: function (id) {
     const condition = {
-      id: id
-    }
+      id: id,
+    };
     return db.del(TABLE_USER, condition);
   },
   single: function (id) {
     return db.load(`select * from ${TABLE_USER} where id = ${id}`);
   },
   CheckUserName: (username) => {
-    return db.load(`SELECT * From user where username = '${username}'`);
+    return db.load(
+      `SELECT * From user where username = '${username}' and type_login = 0`
+    );
   },
   CheckEmailLogin: (email) => {
-    return db.load(`SELECT * From user where email = '${email}' and type_login = 0`);
+    return db.load(
+      `SELECT * From user where email = '${email}' and type_login = 0`
+    );
   },
   CheckPseudonym: (pseu) => {
     return db.load(`SELECT pseudonym From user where pseudonym = '${pseu}'`);
   },
   GetUserByEmail: (email) => {
-    return db.load(`SELECT * from user where email = '${email}'`);
+    return db.load(`SELECT id, username from user where email = '${email}'`);
   },
   UpdatePass: (pass, id) => {
     return db.load(`UPDATE user set password = '${pass}' where id = '${id}'`);
+  },
+  UpdateTimeExpired: (time, id) => {
+    return db.load(
+      `UPDATE user set date_register = '${time}' where id = '${id}'`
+    );
+  },
+  getTimeExpired: (id) => {
+    return db.load(
+      `Select date_register,  duration from ${TABLE_USER} where id = '${id}'`
+    );
   },
   ListEditor: () => {
     return db.load(`SELECT id, name, username from User where role = ${2}`);
@@ -88,7 +102,18 @@ module.exports = {
   },
   loadSub: (offset) => {
     return db.load(
-      `select id, name, email  from ${TABLE_USER} where role = 0 Limit ${LIMIT} offset ${offset}`
+      `select id, name, email, duration, date_register  from ${TABLE_USER} where role = 0 Limit ${LIMIT} offset ${offset}`
     );
+  },
+  checkLoginOth: (type, id, email) => {
+    return db.load(
+      `select * from ${TABLE_USER} where ( googleid = '${id}' and type_login = ${type} ) || ( email = '${email}' and type_login = 0 )`
+    );
+  },
+  countAllUser: () => {
+    return db.load(`Select Count (*) as sl from ${TABLE_USER}`);
+  },
+  changeTimeExpired: (time, id) => {
+    return db.load(`UPDATE user set duration = '${time}' where id = '${id}'`);
   },
 };

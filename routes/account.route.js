@@ -1,11 +1,11 @@
 const express = require("express");
 const moment = require("moment");
 const UserModel = require("../models/user.model");
-const router = express.Router();
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const { authLogin, auth } = require("../middlewares/auth.mdw");
 const userModel = require("../models/user.model");
+const router = express.Router();
 
 router.get("/login", auth, async (req, res) => {
   res.render("viewAccount/login", { layout: false });
@@ -13,7 +13,13 @@ router.get("/login", auth, async (req, res) => {
 
 router.post("/login", auth, async (req, res) => {
   try {
-    const user = await UserModel.CheckEmailLogin(req.body.email);
+    const username = req.body.email;
+    let user;
+    if (username.includes("@")) {
+      user = await UserModel.CheckEmailLogin(username);
+    } else {
+      user = await UserModel.CheckUserName(username);
+    }
     if (user.length == 0) {
       return res.render("viewAccount/login", {
         layout: false,
@@ -35,9 +41,11 @@ router.post("/login", auth, async (req, res) => {
     req.session.authUser = user[0];
     const url = req.query.retUrl || "/";
     if (user[0].role == 3) {
-      return res.redirect("/admin/categories");
+      return res.redirect("/admin/dashboard");
     } else if (user[0].role == 1) {
-      return res.redirect("/writer/postArticle");
+      return res.redirect("/writer");
+    } else if (user[0].role == 2) {
+      return res.redirect("/editor");
     } else res.redirect(url);
   } catch (e) {
     res.render("viewAccount/login", {
@@ -56,8 +64,9 @@ router.post("/register", auth, async (req, res) => {
     const user = req.body;
     user.dob = moment(user.dob, `DD/MM/YYYY`).format(`YYYY-MM-DD`);
     user.password = await bcrypt.hash(user.password, 8);
-    
+
     await UserModel.add(user);
+
     res.render("viewAccount/login", {
       layout: false,
       meg: true,
@@ -92,6 +101,16 @@ router.get("/checkusername", async (req, res) => {
   return res.json(true);
 });
 
+router.get("/checkEmailUpdate", async (req, res) => {
+  const email = req.query.email;
+  const checkEmail = await UserModel.GetUserByEmail(email);
+  if (checkEmail.length === 0) {
+    return res.json(true);
+  }
+  const data = checkEmail[0]["id"] === req.session.authUser.id;
+  res.json(data);
+});
+
 router.post("/logout", authLogin, (req, res) => {
   req.session.destroy((e) => {
     if (e) {
@@ -99,8 +118,8 @@ router.post("/logout", authLogin, (req, res) => {
       return res.redirect("/");
     }
     // res.clearCookie("sid");
-    // res.redirect(req.headers.referer || "/");
-    res.redirect("/");
+    res.redirect(req.headers.referer || "/");
+    // res.redirect("/");
   });
 });
 
@@ -111,11 +130,19 @@ router.get("/forgot", async (req, res) => {
 router.post("/forgot", async (req, res) => {
   try {
     const user = await UserModel.GetUserByEmail(req.body.email);
+
     if (user.length == 0) {
       return res.render("viewAccount/ForgotPass", {
         layout: false,
         err: true,
         mes: "Not found user by email",
+      });
+    }
+    if (user[0].type_login === 1) {
+      return res.render("viewAccount/ForgotPass", {
+        layout: false,
+        err: true,
+        mes: "Email được login bằng google. Không sử dụng được chức năng này",
       });
     }
     const OTP = Math.floor(Math.random() * 100) + 10000;
@@ -156,6 +183,7 @@ router.post("/forgot", async (req, res) => {
       }
     });
   } catch (e) {
+    console.log(e + "  ");
     return res.render("viewAccount/ForgotPass", {
       layout: false,
       err: true,
@@ -182,7 +210,13 @@ router.post("/confirm", (req, res) => {
 router.post("/changepass", async (req, res) => {
   try {
     const passHash = await bcrypt.hash(req.body.password, 8);
-    const user = await UserModel.UpdatePass(passHash, req.body.id_user);
+    const id_user = req.body.change
+      ? req.session.authUser.id
+      : req.body.id_user;
+    const user = await UserModel.UpdatePass(passHash, id_user);
+    if (req.body.change) {
+      return res.redirect("/account/profile");
+    }
     res.redirect("/account/login");
   } catch (e) {
     res.render("viewAccount/ChangePass", {
@@ -194,47 +228,85 @@ router.post("/changepass", async (req, res) => {
 });
 
 router.get("/changepass", authLogin, async (req, res) => {
-  res.render("viewAccount/ChangePass", { layout: false });
+  const isForgot = req.query.isForgot == true;
+  res.render("viewAccount/ChangePass", { layout: false, isForgot });
 });
 
-router.get("/test", authLogin, (req, res) => {
-  res.json("Ok");
+router.get("/compareOldPass/:pass", async (req, res) => {
+  try {
+    const oldPass = req.params.pass;
+    console.log(oldPass);
+    console.log(req.session.authUser);
+    const user = await userModel.single(req.session.authUser.id);
+    console.log(oldPass, user);
+
+    const isMatch = await bcrypt.compare(oldPass, user[0].password);
+    if (!isMatch) {
+      return res.json(false);
+    }
+    return res.json(true);
+  } catch (e) {
+    console.log(e + " ");
+    return res.json(false);
+  }
 });
 
 router.post("/updateProfile", authLogin, async function (req, res) {
-  console.log(new Date(req.body.dob));
   const id = req.session.authUser.id;
   const name = req.body.name;
   const email = req.body.email;
-  const dob = moment(req.body.dob, 'DD/MM/YYYY').format('YYYY/MM/DD');
+  const dob = moment(req.body.dob, "DD/MM/YYYY").format("YYYY-MM-DD");
   const entity_user = {
     id,
     name,
     email,
     dob,
-  }
-  console.log(dob);
-  if(req.session.authUser.role === 1){
+  };
+
+  if (req.session.authUser.role === 1) {
     entity_user.pseudonym = req.body.pseudonym;
   }
-  
+
   await userModel.patch(entity_user);
   req.session.authUser.name = name;
   req.session.authUser.email = email;
   req.session.authUser.dob = dob;
-  if(req.session.authUser.role === 1){
+
+  if (req.session.authUser.role === 1) {
     req.session.authUser.pseudonym = req.body.pseudonym;
   }
-  
-  res.redirect('/');
-})
+
+  if (req.session.authUser.role === 0) {
+    res.redirect("/");
+  } else if (req.session.authUser.role === 1) {
+    res.redirect("/writer");
+  } else if (req.session.authUser.role === 2) {
+    res.redirect("/editor");
+  } else if (req.session.authUser.role === 3) {
+    res.redirect("/admin/dashboard");
+  }
+});
 
 router.get("/profile", authLogin, async function (req, res) {
-  console.log(req.session.authUser);
-  req.session.authUser.dob = moment(req.session.authUser.dob).format('DD/MM/YYYY'); 
-  res.render("viewAccount/profile", { 
-    isWriter: req.session.authUser.role === 1,
-    layout: false });
-})
+  console.log(res.locals.user);
+  res.locals.user.dob1 = moment(res.locals.user.dob).format("DD/MM/YYYY");
+  console.log(res.locals.user.dob1);
+  res.render("viewAccount/profile", {
+    layout: false,
+  });
+});
+
+router.post("/extension", authLogin, async (req, res) => {
+  const date = new Date();
+
+  await UserModel.UpdateTimeExpired(
+    `${moment().format(
+      "YYYY-MM-DD"
+    )} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
+    req.session.authUser.id
+  );
+  res.redirect(`/articles/detail/${req.body.article_id}`);
+});
+
 
 module.exports = router;

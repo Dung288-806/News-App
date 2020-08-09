@@ -6,13 +6,17 @@
 </div>
 
 {{else}}
-<div class="row mb-3">
+<div class="row">
     <div class="col col-sm-12">
-        <a href="/admin/tags/edit/{{id}}" class="btn btn-success">
-            {{tagName}}
-            <i class="fa fa-plus-circle"></i>
-        </a>
-
+        <div class="card text-left">
+            <h3 class="card-header">
+                {{tagName}}
+                <a href="/admin/tags/edit/{{id}}" class="btn btn-success float-right">
+                    Add
+                    <i class="fa fa-plus-circle"></i>
+                </a>
+            </h3>
+        </div>
     </div>
 </div>
 {{!-- <div class="wrap" id="showCate"> --}}
@@ -22,8 +26,8 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Name Articles</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">Tên Bài Viết</th>
+                        <th scope="col">Hành Động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,18 +71,5 @@
     </div>
 {{!-- </div> --}}
 
-{{#section 'js'}}
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<!-- Menu Toggle Script -->
-<script>
-    $("#menu-toggle").click(function (e) {
-        e.preventDefault();
-        $("#wrapper").toggleClass("toggled");
-    });
-</script>
-{{/section}}
 
 {{/if}}

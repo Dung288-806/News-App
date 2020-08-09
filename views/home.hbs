@@ -1,20 +1,36 @@
 <div class="container-fluid paddding mb-5">
     <div class="row mx-0">
         <div class="col-md-6 col-12 paddding animate-box card-article"
-            onclick="window.location='/articles/detail/{{articleMostOutstanding_1.id}}'" data-animate-effect="fadeIn">
+            onclick="checkPremiumAndUpdateView({{articleMostOutstanding_1.id}}, {{articleMostOutstanding_1.views}}, {{articleMostOutstanding_1.isPremium}}, {{this.isLogin}});"
+            data-animate-effect="fadeIn">
             <div class="fh5co_suceefh5co_height img-hover">
                 <div class="fh5co_suceefh5co_height_position_absolute img-hover"></div>
                 <img src="/public{{articleMostOutstanding_1.small_avt}}" alt="img" />
-                <div class="fh5co_suceefh5co_height_position_absolute_font">
-                    <div class="">
-                        <a href="/articles/detail/{{articleMostOutstanding_1.id}}" class="color_fff">
-                            <i class="fa fa-clock-o"></i>
-                            &nbsp;&nbsp;Dec 31,2017
+                <div class="fh5co_suceefh5co_height_position_absolute_font p-0"
+                    style="bottom: 0; top: auto; left: 0; height: auto; padding: 0 4% !important;">
+                    <div class="w-100">
+                        <a href="javascript:;" class="fh5co_good_font">
+                            {{#if articleMostOutstanding_1.isPremium}}
+                            <i class="fa fa-star" aria-hidden="true"></i>
+                            {{/if}}
+                            {{articleMostOutstanding_1.title}}
                         </a>
                     </div>
-                    <div class="">
-                        <a href="/articles/detail/{{articleMostOutstanding_1.id}}" class="fh5co_good_font">
-                            {{articleMostOutstanding_1.title}}
+                    <div class="box-author d-flex align-items-center">
+                        <div class="box-category" onclick="event.stopPropagation();">
+                            <a href="articles/bycate?id={{articleMostOutstanding_1.csId}}">
+                                {{articleMostOutstanding_1.csName}}
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="javascript:;" class="color_fff" style="color: rgba(255, 255, 255, 0.7) !important">
+                            <i class="fa fa-clock-o"></i>
+                            {{articleMostOutstanding_1.datePost}} -
+                            <i class="fa fa-comment" aria-hidden="true"></i>
+                            {{articleMostOutstanding_1.nCmt}} -
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            {{articleMostOutstanding_1.views}}
                         </a>
                     </div>
                 </div>
@@ -24,19 +40,37 @@
             <div class="row">
                 {{#each this.articleMostOutstanding_4}}
                 <div class="col-md-6 col-6 paddding animate-box card-article"
-                    onclick="window.location='/articles/detail/{{id}}'" data-animate-effect="fadeIn">
+                    onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../this.isLogin}});"
+                    data-animate-effect="fadeIn">
                     <div class="fh5co_suceefh5co_height_2 img-hover">
                         <div class="fh5co_suceefh5co_height_position_absolute"></div>
                         <img src="/public{{small_avt}}" alt="img" />
-                        <div class="fh5co_suceefh5co_height_position_absolute_font_2">
-                            <div class="">
-                                <a href="/articles/detail/{{id}}" class="color_fff"> <i
-                                        class="fa fa-clock-o"></i>&nbsp;&nbsp;Oct
-                                    28,2017 </a>
-                            </div>
-                            <div class="">
+                        <div class="fh5co_suceefh5co_height_position_absolute_font_2 p-0"
+                            style="bottom: 0; top: auto; left: 0; height: auto; padding: 0 4% !important">
+                            <div class="w-100">
                                 <a href="/articles/detail/{{id}}" class="fh5co_good_font_2">
+                                    {{#if isPremium}}
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    {{/if}}
                                     {{title}}
+                                </a>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="box-category" onclick="event.stopPropagation();">
+                                    <a href="articles/bycate?id={{csId}}">
+                                        {{csName}}
+                                    </a>
+                                </div>
+                            </div>
+                            <div>
+                                <a href="/articles/detail/{{id}}" class="color_fff"
+                                    style="color: rgba(255, 255, 255, 0.7) !important">
+                                    <i class="fa fa-clock-o"></i>
+                                    {{datePost}} -
+                                    <i class="fa fa-comment" aria-hidden="true"></i>
+                                    {{nCmt}} -
+                                    <i class="fa fa-eye" aria-hidden="true"></i>
+                                    {{views}}
                                 </a>
                             </div>
                         </div>
@@ -47,6 +81,7 @@
         </div>
     </div>
 </div>
+
 <div class="container-fluid pt-3">
     <div class="container animate-box" data-animate-effect="fadeIn">
         <div>
@@ -54,7 +89,8 @@
         </div>
         <div class="owl-carousel owl-theme js d-flex" id="slider1">
             {{#each this.articleMostView_10}}
-            <div class="item px-2 card-article" onclick="window.location='/articles/detail/{{id}}'">
+            <div class="item px-2 card-article"
+                onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../isLogin}});">
                 <div class="fh5co_latest_trading_img_position_relative">
                     <div class="fh5co_latest_trading_img"><img src="/public{{small_avt}}" alt=""
                             class="fh5co_img_special_relative" /></div>
@@ -62,9 +98,26 @@
                     <div class="fh5co_latest_trading_img_position_absolute_1">
                         <a href="/articles/detail/{{id}}" class="text-white"
                             style="font-size: 16px; font-weight: bold;">
+                            {{#if isPremium}}
+                            <i class="fa fa-star" aria-hidden="true"></i>
+                            {{/if}}
                             {{title}}
                         </a>
-                        <div class="fh5co_latest_trading_date_and_name_color b-0"> Walter Johson - March 7,2017</div>
+                        <div class="d-flex align-items-center" style="color: #FFF">
+                            <div class="box-category" onclick="event.stopPropagation();">
+                                <a href="articles/bycate?id={{csId}}">
+                                    {{csName}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="fh5co_latest_trading_date_and_name_color b-0">
+                            <i class="fa fa-clock-o"></i>
+                            {{datePost}} -
+                            <i class="fa fa-comment" aria-hidden="true"></i>
+                            {{nCmt}} -
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            {{views}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -72,6 +125,7 @@
         </div>
     </div>
 </div>
+
 <div class="container-fluid pb-4 pt-5">
     <div class="container animate-box">
         <div>
@@ -79,16 +133,35 @@
         </div>
         <div class="owl-carousel owl-theme card-article" id="slider2">
             {{#each this.articleNew_10}}
-            <div class="item px-2 h-100" onclick="window.location='/articles/detail/{{id}}'">
+            <div class="item px-2 h-100"
+                onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../isLogin}});">
                 <div class="fh5co_hover_news_img">
                     <div class="fh5co_news_img"><img src="/public{{small_avt}}" alt="" /></div>
                     <div class="d-flex flex-column justify-content-between">
                         <a href="/articles/detail/{{id}}" class="d-block fh5co_small_post_heading">
                             <span style="font-size: 16px; font-weight: bold;">
+                                {{#if isPremium}}
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                {{/if}}
                                 {{title}}
                             </span>
                         </a>
-                        <div class="c_g"><i class="fa fa-clock-o"></i> Oct 16,2017</div>
+                        <div class="d-flex align-items-center">
+                            <div class="box-category" onclick="event.stopPropagation();">
+                                <a href="articles/bycate?id={{csId}}"
+                                    style="color: #424040; border: solid 1px #424040;">
+                                    {{csName}}
+                                </a>
+                            </div>
+                        </div>
+                        <div class="c_g">
+                            <i class="fa fa-clock-o"></i>
+                            {{datePost}} -
+                            <i class="fa fa-comment" aria-hidden="true"></i>
+                            {{nCmt}} -
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                            {{views}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,46 +186,11 @@
                     <a href="/articles/bytag?id={{id}}&page=1" class="fh5co_tagg">{{tag_name}}</a>
                     {{/each}}
                 </div>
-                {{!-- <div>
-                    <div class="fh5co_heading fh5co_heading_border_bottom pt-3 py-2 mb-4">Most Popular</div>
-                </div>
-                <div class="row pb-3">
-                    <div class="col-5 align-self-center">
-                        <img src="../public/img/download (1).jpg" alt="img" class="fh5co_most_trading" />
-                    </div>
-                    <div class="col-7 paddding">
-                        <div class="most_fh5co_treding_font"> Magna aliqua ut enim ad minim veniam quis nostrud.</div>
-                        <div class="most_fh5co_treding_font_123"> April 18, 2016</div>
-                    </div>
-                </div>
-                <div class="row pb-3">
-                    <div class="col-5 align-self-center">
-                        <img src="../public/img/allef-vinicius-108153.jpg" alt="img" class="fh5co_most_trading" />
-                    </div>
-                    <div class="col-7 paddding">
-                        <div class="most_fh5co_treding_font"> Enim ad minim veniam nostrud xercitation ullamco.</div>
-                        <div class="most_fh5co_treding_font_123"> April 18, 2016</div>
-                    </div>
-                </div>
-                <div class="row pb-3">
-                    <div class="col-5 align-self-center">
-                        <img src="../public/img/download (2).jpg" alt="img" class="fh5co_most_trading" />
-                    </div>
-                    <div class="col-7 paddding">
-                        <div class="most_fh5co_treding_font"> Magna aliqua ut enim ad minim veniam quis nostrud.</div>
-                        <div class="most_fh5co_treding_font_123"> April 18, 2016</div>
-                    </div>
-                </div>
-                <div class="row pb-3">
-                    <div class="col-5 align-self-center"><img src="../public/img/seth-doyle-133175.jpg" alt="img"
-                            class="fh5co_most_trading" /></div>
-                    <div class="col-7 paddding">
-                        <div class="most_fh5co_treding_font"> Magna aliqua ut enim ad minim veniam quis nostrud.</div>
-                        <div class="most_fh5co_treding_font_123"> April 18, 2016</div>
-                    </div>
-                </div> --}}
             </div>
         </div>
 
     </div>
 </div>
+
+{{#section 'css'}}
+{{/section}}

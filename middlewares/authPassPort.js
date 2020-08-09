@@ -12,7 +12,9 @@ AuthRoute.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   function (req, res) {
-    res.redirect("/account/alert");
+    req.session.isAuthenticated = true;
+    req.session.authUser = req.user;
+    res.redirect(req.headers.referer || "/");
   }
 );
 module.exports = AuthRoute;

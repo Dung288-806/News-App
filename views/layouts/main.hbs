@@ -1,15 +1,11 @@
 <!DOCTYPE html>
-<!--
-	24 News by FreeHTML5.co
-	Twitter: https://twitter.com/fh5co
-	Facebook: https://fb.com/fh5co
-	URL: https://freehtml5.co
--->
+
 <html lang="en" class="no-js">
 
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
+    <link rel="icon" href="https://cdn.iconscout.com/icon/premium/png-256-thumb/newspaper-2102045-1768352.png">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>24 News — Free Website Template, Free HTML5 Template by FreeHTML5.co</title>
     <link href="../../public/css/media_query.css" rel="stylesheet" type="text/css" />
@@ -27,10 +23,62 @@
 
     <link rel="stylesheet" href="/public/css/style.css">
     {{{_sections.css}}}
+    {{!-- html2canvas --}}
+    <style>
+        body {
+            background-color: white;
+        }
+
+        .box-access-alert {
+            display: block;
+            position: fixed;
+            top: 32px;
+            left: 50%;
+            transform: translateX(-50%) scaleY(0);
+            background-color: #17A2B8;
+            color: #FFF;
+            line-height: 32px;
+            padding: 0px 16px;
+            z-index: 2000;
+            transition: all 0.3s;
+        }
+    </style>
+    <style>
+        a {
+            text-decoration: none !important;
+        }
+
+        .box-category a {
+            border: solid 1px #FFF;
+            border-radius: 5px;
+            padding: 3px 6px;
+            color: #FFF;
+            font-size: 13px;
+        }
+
+        .box-category a:hover {
+            color: #f5bc04 !important;
+            border-color: #f5bc04 !important;
+            transition: all 0.4s;
+        }
+    </style>
+    <style>
+        .fa-star {
+            color: yellow;
+        }
+    </style>
 
 </head>
 
 <body>
+
+    <div class="box-access-alert" id="boxAccessAlert">
+        <i class="fa fa-volume-up"></i>
+        <span>Cần phải <b>đăng nhập</b> để có thể xem bài viết <b><i class="fa fa-star-o"
+                    style="font-weight: bold;"></i>
+                Premium</b>!!</span>
+    </div>
+
     <header>
         {{> header}}
     </header>
@@ -51,9 +99,7 @@
         <a href="#" class="js-gotop"><i class="fa fa-arrow-up"></i></a>
     </div>
 
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.6/handlebars.min.js"></script>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="../../public/js/owl.carousel.min.js"></script>
     <!--<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>-->
@@ -67,8 +113,28 @@
     <script src="../../public/js/jquery.waypoints.min.js"></script>
     <!-- Main -->
     <script src="../../public/js/main.js"></script>
-
     {{{_sections.js}}}
+
+    <script>
+        function checkPremiumAndUpdateView(articles_id, views, isPremium, isLogin) {
+            if (isPremium && !isLogin) {
+                const boxAccessAlert = document.getElementById('boxAccessAlert');
+                boxAccessAlert.style.transform = 'translateX(-50%) scaleY(1)';
+                setTimeout(() => {
+                    boxAccessAlert.style.transform = 'translateX(-50%) scaleY(0)';
+                }, 3000)
+                return;
+            }
+            $.post(`/articles/update-views`,
+                { articles_id, views },
+                function (data) {
+                    if (data.isUpdateView === true) {
+                        window.location = `/articles/detail/${articles_id}`
+                    }
+                },
+                'json');
+        }
+    </script>
 </body>
 
 </html>

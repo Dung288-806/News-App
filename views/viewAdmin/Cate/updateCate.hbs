@@ -215,11 +215,12 @@
                 <div class="alert alert-danger mt-3">{{mes}}</div>
                 {{/if}}
                 <div class="alert alert-danger mt-3 checkCateName">Chuyên mục đã tồn tại</div>
-                <input autofocus required name="name" id="name" type="text" value="{{cate.name}}" placeholder="Category name" />
+                <input autofocus required name="name" id="name" type="text" value="{{cate.name}}"
+                    placeholder="Category name" />
                 <input type="hidden" id="cate_id" name="id" value="{{cate.id}}">
                 <select name="id_editor" id="id_editor" class="form-control form-control-lg">
                     {{#each listEditor}}
-                        <option {{#if this.isCheck}} selected {{/if}} value="{{this.id}}">{{this.name}}</option>
+                    <option {{#if this.isCheck}} selected {{/if}} value="{{this.id}}">{{this.name}}</option>
                     {{/each}}
                 </select>
                 <button type="submit">Update</button>
@@ -228,11 +229,9 @@
         </div>
 
     </div>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
     <script>
         $('#frmEditCate').on('submit', function (e) {
             e.preventDefault();
@@ -253,5 +252,4 @@
             })
         }
     </script>
-
 </body>

@@ -1,5 +1,5 @@
-# LTWeb2 - Final Project - newspaper
- a
+# LTWeb2 - Final Project - NEWSPAPER
+
 ## Thành viên
 
 - Nguyễn Lê Anh Thi - 1760188
@@ -74,25 +74,17 @@
 - [x] Quên mật khẩu
   - Yêu cầu xác nhận bằng email OTP
 
-### 3. Phân hệ phóng viên - `writer`
+### 3. Yêu cầu dữ liệu
 
-- [x] Đăng bài viết
+- Cần có ít nhất 20 bài viết thuộc 4-5 chuyên mục, mỗi bài viết đều có đánh nhãn hợp lý, nội dung & hình ảnh đầy đủ.
+- Chỉ hoàn thành ĐÚNG các chức năng được yêu cầu
 
-  - Hỗ trợ `WYSIWYG`
-    - ckeditor (https://ckeditor.com)
-    - quilljs (https://quilljs.com) - tinymce (http://tiny.cloud) - summernote (https://summernote.org)
-  - Hỗ trợ upload hình ảnh & link YouTube trong bài viết
-  - Khi đăng bài, phóng viên chỉ nhập tiêu đề, tóm tắt, nội dung, chuyên mục & gán nhãn cho bài viết
+  - Có thể bổ sung các hiệu ứng để tăng tính tiện dụng của từng chức năng cụ thể
 
-- [x] Xem danh sách bài viết (do phóng viên viết)
+### 4. Yêu cầu quản lý mã nguồn
 
-  - Đã được duyệt & chờ xuất bản
-  - Đã xuất bản
-  - Bị từ chối
-  - Chưa được duyệt
-
-- [x] Hiệu chỉnh bài viết
-  - Chi được phép hiệu chỉnh các bài viết `bị từ chối` hoặc `chưa được duyệt`
+- Sinh viên cần upload mã nguồn lên github từ lúc bắt đầu thực hiện đồ án.
+- Nhóm nào lịch sử commit/push gần như không có ➠ 0đ
 
 # Phase II - Bussiness
 
@@ -172,9 +164,31 @@ Sử dụng kỹ thuật Full-text search
 ## 2. Phân hệ độc giả - subscriber
 
 - Độc giả có đăng ký tài khoản (thực tế là mua) sẽ được phép xem & `download` ấn bản (.pdf) một số bài viết premium.
-- Tài khoản độc giả có thời hạn 7 ngày, tính từ ngày được cấp.
+- Tài khoản độc giả có thời hạn 7 ngày (nên cài đặt N phút), tính từ ngày được cấp.
 - Khi hết hạn, tài khoản độc giả cần được gia hạn để có thể tiếp tục truy cập các bài viết premium.
 - Các bài viết premium được ưu tiên hiển thị trước trong kết quả khi độc giả thực hiện chức năng xem danh sách hoặc tìm kiếm bài viết.
+
+## 3. Phân hệ phóng viên - `writer`
+
+- [x] Đăng bài viết
+
+  - Hỗ trợ `WYSIWYG`
+    - ckeditor (https://ckeditor.com)
+    - quilljs (https://quilljs.com)
+    - tinymce (http://tiny.cloud)
+    - summernote (https://summernote.org)
+  - Hỗ trợ upload hình ảnh & link YouTube trong bài viết
+  - Khi đăng bài, phóng viên chỉ nhập tiêu đề, tóm tắt, nội dung, chuyên mục & gán nhãn cho bài viết
+
+- [x] Xem danh sách bài viết (do phóng viên viết)
+
+  - Đã được duyệt & chờ xuất bản
+  - Đã xuất bản
+  - Bị từ chối
+  - Chưa được duyệt
+
+- [x] Hiệu chỉnh bài viết
+  - Chi được phép hiệu chỉnh các bài viết `bị từ chối` hoặc `chưa được duyệt`
 
 ## 4. Phân hệ biên tập viên - editor
 
@@ -191,6 +205,7 @@ Sử dụng kỹ thuật Full-text search
 `Lưu ý: Quản lý bao gồm các thao tác Xem danh sách, Xem chi tiết, Thêm, Xoá, Cập nhật và các thao tác chuyên biệt khác`
 
 - [x] Quản lý chuyên mục category
+- [x] Quản lý nhãn tag
 - [x] Quản lý bài viết
   - Có thể cập nhật trạng thái bài viết từ draft sang xuất bản
 - [x] Quản lý danh sách người dùng (phóng viên, biên tập viên, độc giả, ...)
