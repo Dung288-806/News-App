@@ -110,7 +110,6 @@ AdminRoute.get("/categories", authLogin, authRole(3), async (req, res) => {
         numPage.push({ val: i, isActive: false });
       }
     }
-
     const offset = (page - 1) * LIMIT;
     const allCate = await loadCateWithManager(offset);
     allCate.forEach(async (cate) => {
@@ -125,17 +124,20 @@ AdminRoute.get("/categories", authLogin, authRole(3), async (req, res) => {
       }
     });
 
-    res.render("viewAdmin/Cate/category", {
-      isCategory: true,
-      layout: "adminLayout",
-      allCate,
-      preDis: page == 1,
-      nextDis: page == countPage,
-      numPage,
-      nextPage: page + 1,
-      prePage: page - 1,
-      isHas: allCate.length === 0,
-    });
+    setTimeout(() => {
+      res.render("viewAdmin/Cate/category", {
+        isCategory: true,
+        layout: "adminLayout",
+        allCate,
+        preDis: page == 1,
+        nextDis: page == countPage,
+        numPage,
+        nextPage: page + 1,
+        prePage: page - 1,
+        isHas: allCate.length === 0,
+      });
+    }, 2000);
+
   } catch (e) {
     res.render("viewAdmin/Cate/category", {
       layout: false,
@@ -184,11 +186,13 @@ AdminRoute.get(
           e.isCheck = false;
         }
       });
-      res.render("viewAdmin/Cate/updateCate", {
+      setTimeout(() => {
+        res.render("viewAdmin/Cate/updateCate", {
         layout: false,
         cate: cate[0],
         listEditor,
-      });
+      }, 1500);
+      })
     } catch (e) {
       res.render("viewAdmin/Cate/updateCate", {
         layout: false,
@@ -289,18 +293,20 @@ AdminRoute.get("/categories/:id", authLogin, authRole(3), async (req, res) => {
       cate.sum = sum;
     });
 
-    res.render("viewAdmin/Cate/cateSub", {
-      layout: "adminLayout",
-      cateSub,
-      isHas: cateSub.length == 0,
-      cateNameParent: cateNameParent[0].name,
-      preDis: page == 1,
-      nextDis: page == countPage,
-      numPage,
-      nextPage: page + 1,
-      prePage: page - 1,
-      id,
-    });
+    setTimeout(() => {
+      res.render("viewAdmin/Cate/cateSub", {
+        layout: "adminLayout",
+        cateSub,
+        isHas: cateSub.length == 0,
+        cateNameParent: cateNameParent[0].name,
+        preDis: page == 1,
+        nextDis: page == countPage,
+        numPage,
+        nextPage: page + 1,
+        prePage: page - 1,
+        id,
+      });
+    }, 2000)
   } catch (e) {
     res.render("500", { layout: false });
   }
@@ -321,11 +327,13 @@ AdminRoute.get(
         c.isCheck = false;
       }
     });
-    res.render("viewAdmin/Cate/updateSubCate", {
-      layout: false,
-      SubCate: SubCate[0],
-      listCateParent,
-    });
+    setTimeout(() => {
+      res.render("viewAdmin/Cate/updateSubCate", {
+        layout: false,
+        SubCate: SubCate[0],
+        listCateParent,
+      });
+    }, 1500)
   }
 );
 
@@ -377,10 +385,12 @@ AdminRoute.get(
         c.selected = false;
       }
     });
-    res.render("viewAdmin/Cate/addSubCate", {
-      layout: false,
-      listCateParent,
-    });
+    setTimeout(() => {
+      res.render("viewAdmin/Cate/addSubCate", {
+        layout: false,
+        listCateParent,
+      });
+    }, 2000)
   }
 );
 AdminRoute.post(
@@ -464,17 +474,19 @@ AdminRoute.get("/tags", authLogin, authRole(3), async (req, res) => {
       }
     });
 
-    res.render("viewAdmin/tags/tags", {
-      layout: "adminLayout",
-      listTags,
-      preDis: page == 0 || page == 1,
-      nextDis: page == 0 || page == countPage,
-      numPage,
-      nextPage: page + 1,
-      prePage: page - 1,
-      isTag: true,
-      isHas: listTags.length == 0,
-    });
+    setTimeout(() => {
+      res.render("viewAdmin/tags/tags", {
+        layout: "adminLayout",
+        listTags,
+        preDis: page == 0 || page == 1,
+        nextDis: page == 0 || page == countPage,
+        numPage,
+        nextPage: page + 1,
+        prePage: page - 1,
+        isTag: true,
+        isHas: listTags.length == 0,
+      });
+    }, 2000)
   } catch (e) {
     console.log(e + " ");
     res.render("500", { layout: false });
@@ -668,16 +680,18 @@ AdminRoute.get("/writer", authLogin, authRole(3), async (req, res) => {
       }
     });
 
-    res.render("viewAdmin/people/writer/showWriter", {
-      layout: "adminLayout",
-      listWriter,
-      preDis: page == 1,
-      nextDis: page == countPage,
-      numPage,
-      nextPage: page + 1,
-      prePage: page - 1,
-      isHas: listWriter.length === 0,
-    });
+    setTimeout(() => {
+      res.render("viewAdmin/people/writer/showWriter", {
+        layout: "adminLayout",
+        listWriter,
+        preDis: page == 1,
+        nextDis: page == countPage,
+        numPage,
+        nextPage: page + 1,
+        prePage: page - 1,
+        isHas: listWriter.length === 0,
+      });
+    }, 2000)
   } catch (e) {
     res.render("404", {
       layout: false,
@@ -817,20 +831,22 @@ AdminRoute.get("/editor", authLogin, authRole(3), async (req, res) => {
       e.sum = sum;
     });
 
-    res.render("viewAdmin/people/editor/showEditor", {
-      layout: "adminLayout",
-      listEditor,
-      preDis: page == 1,
-      nextDis: page == countPage,
-      numPage,
-      nextPage: page + 1,
-      prePage: page - 1,
-      helpers: {
-        formatDate: function (date) {
-          return moment(date).format("L");
+    setTimeout(() => {
+      res.render("viewAdmin/people/editor/showEditor", {
+        layout: "adminLayout",
+        listEditor,
+        preDis: page == 1,
+        nextDis: page == countPage,
+        numPage,
+        nextPage: page + 1,
+        prePage: page - 1,
+        helpers: {
+          formatDate: function (date) {
+            return moment(date).format("L");
+          },
         },
-      },
-    });
+      });
+    }, 2000)
   } catch (e) {
     res.render("404", {
       layout: false,
@@ -900,18 +916,20 @@ AdminRoute.get("/editor/view/:id", authLogin, authRole(3), async (req, res) => {
       }
     });
 
-    res.render("viewAdmin/people/editor/showCateByEditor", {
-      layout: "adminLayout",
-      allCate,
-      preDis: page == 1,
-      nextDis: page == countPage,
-      numPage,
-      nextPage: page + 1,
-      prePage: page - 1,
-      id_editor: id,
-      isHas: allCate.length == 0,
-      nameEditor,
-    });
+    setTimeout(() => {
+      res.render("viewAdmin/people/editor/showCateByEditor", {
+        layout: "adminLayout",
+        allCate,
+        preDis: page == 1,
+        nextDis: page == countPage,
+        numPage,
+        nextPage: page + 1,
+        prePage: page - 1,
+        id_editor: id,
+        isHas: allCate.length == 0,
+        nameEditor,
+      });
+    }, 2000)
   } catch (e) {
     res.render("viewAdmin/people/editor/showCateByEditor", {
       layout: false,
@@ -1259,11 +1277,13 @@ AdminRoute.get("/typeArt", authLogin, authRole(3), async (req, res) => {
       }
       t.sl = sl;
     });
-    res.render("viewAdmin/typeArt/showTypeArt", {
-      layout: "adminLayout",
-      allType,
-      isTypeArt: true,
-    });
+    setTimeout(() => {
+      res.render("viewAdmin/typeArt/showTypeArt", {
+        layout: "adminLayout",
+        allType,
+        isTypeArt: true,
+      });
+    }, 2000)
   } catch (e) {
     res.render("500", {
       layout: false,
@@ -1283,11 +1303,13 @@ AdminRoute.get("/status", authLogin, authRole(3), async (req, res) => {
       }
       t.sl = sl;
     });
-    res.render("viewAdmin/statusArt/showStatusArt", {
-      layout: "adminLayout",
-      allStt,
-      isStatus: true,
-    });
+    setTimeout(() => {
+      res.render("viewAdmin/statusArt/showStatusArt", {
+        layout: "adminLayout",
+        allStt,
+        isStatus: true,
+      });
+    }, 2000)
   } catch (e) {
     res.render("500", {
       layout: false,

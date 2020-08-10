@@ -222,7 +222,7 @@ router.post(
   upload.single("avt"),
   async function (req, res) {
     try {
-      const write_date = new Date();
+      //const write_date = new Date();
       const Articles_id = req.body.Articles_id;
       const title = req.body.title;
       const sum_content = req.body.sum_content;
@@ -247,7 +247,6 @@ router.post(
           status,
           Writer_id,
           type,
-          write_date,
           CategoriesSub_id,
         };
         fs.unlink("./public" + req.body.article_avt, (err) => {
@@ -263,7 +262,6 @@ router.post(
           status,
           Writer_id,
           type,
-          write_date,
           CategoriesSub_id,
         };
       }

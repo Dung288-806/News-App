@@ -23,8 +23,8 @@ router.get("/download/:id", authLogin, async function (req, res, next) {
       return res.download(`public/pdf/${fileName}`);
     }
   }
-
-  await page.goto(`http://localhost:3000/articles/view?id=${article_id}`, {
+// http://localhost:3000
+  await page.goto(`/articles/view?id=${article_id}`, {
     waitUntil: "networkidle2",
   });
   await page.setViewport({ width: 0, height: 2000 });
