@@ -112,31 +112,33 @@ AdminRoute.get("/categories", authLogin, authRole(3), async (req, res) => {
     }
     const offset = (page - 1) * LIMIT;
     const allCate = await loadCateWithManager(offset);
-    allCate.forEach(async (cate) => {
-      let sum = await getCountSubCateByIDCateParent(cate.id);
-      sum = sum[0]["count(*)"];
-      if (sum == 0) {
-        cate.sum = sum;
-        cate.isDel = false;
-      } else {
-        cate.sum = sum;
-        cate.isDel = true;
-      }
-    });
 
-    setTimeout(() => {
-      res.render("viewAdmin/Cate/category", {
-        isCategory: true,
-        layout: "adminLayout",
-        allCate,
-        preDis: page == 1,
-        nextDis: page == countPage,
-        numPage,
-        nextPage: page + 1,
-        prePage: page - 1,
-        isHas: allCate.length === 0,
-      });
-    }, 2000);
+    const newArr = await Promise.all(
+      allCate.map(async (cate) => {
+        let sum = await getCountSubCateByIDCateParent(cate.id);
+        sum = sum[0]["count(*)"];
+        if (sum === 0) {
+          cate.sum = sum;
+          cate.isDel = false;
+        } else {
+          cate.sum = sum;
+          cate.isDel = true;
+        }
+        return { ...cate };
+      })
+    )
+
+    res.render("viewAdmin/Cate/category", {
+      isCategory: true,
+      layout: "adminLayout",
+      allCate: newArr,
+      preDis: page == 1,
+      nextDis: page == countPage,
+      numPage,
+      nextPage: page + 1,
+      prePage: page - 1,
+      isHas: allCate.length === 0,
+    });
 
   } catch (e) {
     res.render("viewAdmin/Cate/category", {
@@ -179,27 +181,24 @@ AdminRoute.get(
       const id = req.params.id;
       const cate = await getCateByID(id);
       let listEditor = await ListEditor();
-      listEditor.forEach((e) => {
-        if (e.id == cate[0]["id_editor"]) {
-          e.isCheck = true;
-        } else {
-          e.isCheck = false;
-        }
-      });
-      setTimeout(() => {
-        res.render("viewAdmin/Cate/updateCate", {
-        layout: false,
-        cate: cate[0],
-        listEditor,
-      }, 1500);
-      })
-    } catch (e) {
+      const newArr = await Promise.all(
+        listEditor.map((e) => {
+          if (e.id == cate[0]["id_editor"]) {
+            e.isCheck = true;
+          } else {
+            e.isCheck = false;
+          }
+          return e;
+        })
+      );
       res.render("viewAdmin/Cate/updateCate", {
         layout: false,
-        err: true,
-        mes: e + " ",
-        listEditor,
+        cate: cate[0],
+        listEditor: newArr,
       });
+    } catch (e) {
+      console.log(e + " ");
+      res.render("500", { layout: false });
     }
   }
 );
@@ -282,31 +281,32 @@ AdminRoute.get("/categories/:id", authLogin, authRole(3), async (req, res) => {
     const offset = (page - 1) * LIMIT;
     const cateSub = await allCateSubByParentPage(id, offset);
 
-    cateSub.forEach(async (cate) => {
-      let sum = await getCountArticleByIDCateSub(cate.id);
-      sum = sum[0]["page"];
-      if (sum === 0) {
-        cate.isDel = false;
-      } else {
-        cate.isDel = true;
-      }
-      cate.sum = sum;
-    });
+    const newArr = await Promise.all(
+      cateSub.map(async (cate) => {
+        let sum = await getCountArticleByIDCateSub(cate.id);
+        sum = sum[0]["page"];
+        if (sum === 0) {
+          cate.isDel = false;
+        } else {
+          cate.isDel = true;
+        }
+        cate.sum = sum;
+        return cate;
+      })
+    );
 
-    setTimeout(() => {
-      res.render("viewAdmin/Cate/cateSub", {
-        layout: "adminLayout",
-        cateSub,
-        isHas: cateSub.length == 0,
-        cateNameParent: cateNameParent[0].name,
-        preDis: page == 1,
-        nextDis: page == countPage,
-        numPage,
-        nextPage: page + 1,
-        prePage: page - 1,
-        id,
-      });
-    }, 2000)
+    res.render("viewAdmin/Cate/cateSub", {
+      layout: "adminLayout",
+      cateSub: newArr,
+      isHas: cateSub.length == 0,
+      cateNameParent: cateNameParent[0].name,
+      preDis: page == 1,
+      nextDis: page == countPage,
+      numPage,
+      nextPage: page + 1,
+      prePage: page - 1,
+      id,
+    });
   } catch (e) {
     res.render("500", { layout: false });
   }
@@ -327,13 +327,11 @@ AdminRoute.get(
         c.isCheck = false;
       }
     });
-    setTimeout(() => {
-      res.render("viewAdmin/Cate/updateSubCate", {
-        layout: false,
-        SubCate: SubCate[0],
-        listCateParent,
-      });
-    }, 1500)
+    res.render("viewAdmin/Cate/updateSubCate", {
+      layout: false,
+      SubCate: SubCate[0],
+      listCateParent,
+    });
   }
 );
 
@@ -385,12 +383,11 @@ AdminRoute.get(
         c.selected = false;
       }
     });
-    setTimeout(() => {
-      res.render("viewAdmin/Cate/addSubCate", {
-        layout: false,
-        listCateParent,
-      });
-    }, 2000)
+
+    res.render("viewAdmin/Cate/addSubCate", {
+      layout: false,
+      listCateParent,
+    });
   }
 );
 AdminRoute.post(
@@ -462,31 +459,32 @@ AdminRoute.get("/tags", authLogin, authRole(3), async (req, res) => {
       }
     }
 
-    listTags.forEach(async (tag) => {
-      let sum = await getCountTagsWithArticle(tag.id);
-      sum = sum[0]["count(*)"];
-      if (sum == 0) {
-        tag.sum = sum;
-        tag.isDel = false;
-      } else {
-        tag.sum = sum;
-        tag.isDel = true;
-      }
-    });
+    const newArr = await Promise.all(
+      listTags.map(async (tag) => {
+        let sum = await getCountTagsWithArticle(tag.id);
+        sum = sum[0]["count(*)"];
+        if (sum == 0) {
+          tag.sum = sum;
+          tag.isDel = false;
+        } else {
+          tag.sum = sum;
+          tag.isDel = true;
+        }
+        return tag;
+      })
+    );
 
-    setTimeout(() => {
-      res.render("viewAdmin/tags/tags", {
-        layout: "adminLayout",
-        listTags,
-        preDis: page == 0 || page == 1,
-        nextDis: page == 0 || page == countPage,
-        numPage,
-        nextPage: page + 1,
-        prePage: page - 1,
-        isTag: true,
-        isHas: listTags.length == 0,
-      });
-    }, 2000)
+    res.render("viewAdmin/tags/tags", {
+      layout: "adminLayout",
+      listTags: newArr,
+      preDis: page == 0 || page == 1,
+      nextDis: page == 0 || page == countPage,
+      numPage,
+      nextPage: page + 1,
+      prePage: page - 1,
+      isTag: true,
+      isHas: listTags.length == 0,
+    });
   } catch (e) {
     console.log(e + " ");
     res.render("500", { layout: false });
@@ -668,30 +666,31 @@ AdminRoute.get("/writer", authLogin, authRole(3), async (req, res) => {
         numPage.push({ val: i, isActive: false });
       }
     }
-    listWriter.forEach(async (w) => {
-      let sum = await countArtByWriter(w.id);
-      sum = sum[0]["sl"];
-      if (sum == 0) {
-        w.sum = sum;
-        w.isDel = false;
-      } else {
-        w.sum = sum;
-        w.isDel = true;
-      }
-    });
+    const newArr = await Promise.all(
+      listWriter.map(async (w) => {
+        let sum = await countArtByWriter(w.id);
+        sum = sum[0]["sl"];
+        if (sum == 0) {
+          w.sum = sum;
+          w.isDel = false;
+        } else {
+          w.sum = sum;
+          w.isDel = true;
+        }
+        return w;
+      })
+    );
 
-    setTimeout(() => {
-      res.render("viewAdmin/people/writer/showWriter", {
-        layout: "adminLayout",
-        listWriter,
-        preDis: page == 1,
-        nextDis: page == countPage,
-        numPage,
-        nextPage: page + 1,
-        prePage: page - 1,
-        isHas: listWriter.length === 0,
-      });
-    }, 2000)
+    res.render("viewAdmin/people/writer/showWriter", {
+      layout: "adminLayout",
+      listWriter: newArr,
+      preDis: page == 1,
+      nextDis: page == countPage,
+      numPage,
+      nextPage: page + 1,
+      prePage: page - 1,
+      isHas: listWriter.length === 0,
+    });
   } catch (e) {
     res.render("404", {
       layout: false,
@@ -821,32 +820,33 @@ AdminRoute.get("/editor", authLogin, authRole(3), async (req, res) => {
         numPage.push({ val: i, isActive: false });
       }
     }
-    listEditor.forEach(async (e) => {
-      const sum = (await countCateByEditor(e.id))[0]["sum"];
-      if (sum == 0) {
-        e.isDel = false;
-      } else {
-        e.isDel = true;
-      }
-      e.sum = sum;
-    });
+    const newArr = await Promise.all(
+      listEditor.map(async (e) => {
+        const sum = (await countCateByEditor(e.id))[0]["sum"];
+        if (sum == 0) {
+          e.isDel = false;
+        } else {
+          e.isDel = true;
+        }
+        e.sum = sum;
+        return e;
+      })
+    );
 
-    setTimeout(() => {
-      res.render("viewAdmin/people/editor/showEditor", {
-        layout: "adminLayout",
-        listEditor,
-        preDis: page == 1,
-        nextDis: page == countPage,
-        numPage,
-        nextPage: page + 1,
-        prePage: page - 1,
-        helpers: {
-          formatDate: function (date) {
-            return moment(date).format("L");
-          },
+    res.render("viewAdmin/people/editor/showEditor", {
+      layout: "adminLayout",
+      listEditor,
+      preDis: page == 1,
+      nextDis: page == countPage,
+      numPage,
+      nextPage: page + 1,
+      prePage: page - 1,
+      helpers: {
+        formatDate: function (date) {
+          return moment(date).format("L");
         },
-      });
-    }, 2000)
+      },
+    });
   } catch (e) {
     res.render("404", {
       layout: false,
@@ -904,32 +904,33 @@ AdminRoute.get("/editor/view/:id", authLogin, authRole(3), async (req, res) => {
     }
     const allCate = await listCateByEditor(id, (page - 1) * LIMIT);
 
-    allCate.forEach(async (cate) => {
-      let sum = await getCountSubCateByIDCateParent(cate.id);
-      sum = sum[0]["count(*)"];
-      if (sum == 0) {
-        cate.sum = sum;
-        cate.isDel = false;
-      } else {
-        cate.sum = sum;
-        cate.isDel = true;
-      }
-    });
+    const newArr = await Promise.all(
+      allCate.map(async (cate) => {
+        let sum = await getCountSubCateByIDCateParent(cate.id);
+        sum = sum[0]["count(*)"];
+        if (sum == 0) {
+          cate.sum = sum;
+          cate.isDel = false;
+        } else {
+          cate.sum = sum;
+          cate.isDel = true;
+        }
+        return cate;
+      })
+    );
 
-    setTimeout(() => {
-      res.render("viewAdmin/people/editor/showCateByEditor", {
-        layout: "adminLayout",
-        allCate,
-        preDis: page == 1,
-        nextDis: page == countPage,
-        numPage,
-        nextPage: page + 1,
-        prePage: page - 1,
-        id_editor: id,
-        isHas: allCate.length == 0,
-        nameEditor,
-      });
-    }, 2000)
+    res.render("viewAdmin/people/editor/showCateByEditor", {
+      layout: "adminLayout",
+      allCate: newArr,
+      preDis: page == 1,
+      nextDis: page == countPage,
+      numPage,
+      nextPage: page + 1,
+      prePage: page - 1,
+      id_editor: id,
+      isHas: allCate.length == 0,
+      nameEditor,
+    });
   } catch (e) {
     res.render("viewAdmin/people/editor/showCateByEditor", {
       layout: false,
@@ -986,7 +987,7 @@ AdminRoute.get("/subscriber", authLogin, authRole(3), async (req, res) => {
           (new Date(Date.now()) - new Date(i["date_register"])) / (1000 * 60)
       );
       i.duration = i.duration <= 0 ? 0 : i.duration;
-      i.page = page
+      i.page = page;
     });
 
     res.render("viewAdmin/people/subscriber/showSub", {
@@ -1268,22 +1269,24 @@ AdminRoute.post("/articles/del", authLogin, authRole(3), async (req, res) => {
 AdminRoute.get("/typeArt", authLogin, authRole(3), async (req, res) => {
   try {
     const allType = await loadAllTypeArt();
-    allType.forEach(async (t) => {
-      const sl = (await getSumArtByType(t.id))[0]["sl"];
-      if (sl < 1) {
-        t.isDel = false;
-      } else {
-        t.isDel = true;
-      }
-      t.sl = sl;
+    const newArr = await Promise.all(
+      allType.map(async (t) => {
+        const sl = (await getSumArtByType(t.id))[0]["sl"];
+        if (sl < 1) {
+          t.isDel = false;
+        } else {
+          t.isDel = true;
+        }
+        t.sl = sl;
+        return t;
+      })
+    );
+
+    res.render("viewAdmin/typeArt/showTypeArt", {
+      layout: "adminLayout",
+      allType: newArr,
+      isTypeArt: true,
     });
-    setTimeout(() => {
-      res.render("viewAdmin/typeArt/showTypeArt", {
-        layout: "adminLayout",
-        allType,
-        isTypeArt: true,
-      });
-    }, 2000)
   } catch (e) {
     res.render("500", {
       layout: false,
@@ -1294,22 +1297,24 @@ AdminRoute.get("/typeArt", authLogin, authRole(3), async (req, res) => {
 AdminRoute.get("/status", authLogin, authRole(3), async (req, res) => {
   try {
     const allStt = await loadAllStatus();
-    allStt.forEach(async (t) => {
-      const sl = (await getSumArtByStt(t.id))[0]["sl"];
-      if (sl < 1) {
-        t.isDel = false;
-      } else {
-        t.isDel = true;
-      }
-      t.sl = sl;
+    const newArr = await Promise.all(
+      allStt.map(async (t) => {
+        const sl = (await getSumArtByStt(t.id))[0]["sl"];
+        if (sl < 1) {
+          t.isDel = false;
+        } else {
+          t.isDel = true;
+        }
+        t.sl = sl;
+        return t;
+      })
+    );
+
+    res.render("viewAdmin/statusArt/showStatusArt", {
+      layout: "adminLayout",
+      allStt: newArr,
+      isStatus: true,
     });
-    setTimeout(() => {
-      res.render("viewAdmin/statusArt/showStatusArt", {
-        layout: "adminLayout",
-        allStt,
-        isStatus: true,
-      });
-    }, 2000)
   } catch (e) {
     res.render("500", {
       layout: false,
@@ -1464,35 +1469,45 @@ AdminRoute.get("/dashboard/data", authLogin, authRole(3), async (req, res) => {
   });
 });
 
-AdminRoute.post("/changeTimeExpired", authLogin, authRole(3), async (req, res) => {
-  try {
-    const timeNeedChange = +(await getTimeExpired(req.body.id))[0]["duration"];
-    const date = new Date();
-    
-    const timeRemain = Math.round(
-        timeNeedChange - (new Date(Date.now()) - new Date((await getTimeExpired(req.body.id))[0]["date_register"])) / (1000 * 60)
+AdminRoute.post(
+  "/changeTimeExpired",
+  authLogin,
+  authRole(3),
+  async (req, res) => {
+    try {
+      const timeNeedChange = +(await getTimeExpired(req.body.id))[0][
+        "duration"
+      ];
+      const date = new Date();
+
+      const timeRemain = Math.round(
+        timeNeedChange -
+          (new Date(Date.now()) -
+            new Date((await getTimeExpired(req.body.id))[0]["date_register"])) /
+            (1000 * 60)
       );
-    if (timeRemain <= 0) {
-      await Promise.all([
-        changeTimeExpired(+req.body.timeChange, req.body.id),
-        UpdateTimeExpired(
-          `${moment().format(
-            "YYYY-MM-DD"
-          )} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
-          req.body.id
-        ),
-      ]);
-    } else {
-      const timeToChange = +req.body.timeChange + timeNeedChange;
-      await changeTimeExpired(timeToChange, req.body.id);
+      if (timeRemain <= 0) {
+        await Promise.all([
+          changeTimeExpired(+req.body.timeChange, req.body.id),
+          UpdateTimeExpired(
+            `${moment().format(
+              "YYYY-MM-DD"
+            )} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`,
+            req.body.id
+          ),
+        ]);
+      } else {
+        const timeToChange = +req.body.timeChange + timeNeedChange;
+        await changeTimeExpired(timeToChange, req.body.id);
+      }
+      res.redirect(`/admin/subscriber?page=${req.body.page}`);
+    } catch (e) {
+      console.log(e + " ");
+      res.render("500", {
+        layout: false,
+      });
     }
-    res.redirect(`/admin/subscriber?page=${req.body.page}`);
-  } catch (e) {
-    console.log(e + ' ');
-    res.render('500', {
-      layout: false
-    })
   }
-});
+);
 
 module.exports = AdminRoute;
