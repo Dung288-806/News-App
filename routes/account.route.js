@@ -62,9 +62,10 @@ router.get("/register", auth, async (req, res) => {
 router.post("/register", auth, async (req, res) => {
   try {
     const user = req.body;
+    const date = new Date()
     user.dob = moment(user.dob, `DD/MM/YYYY`).format(`YYYY-MM-DD`);
     user.password = await bcrypt.hash(user.password, 8);
-    user.date_register = new Date(Date.now())
+    user.date_register = `${moment().format("YYYY-MM-DD")} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
     await UserModel.add(user);
 
     res.render("viewAccount/login", {

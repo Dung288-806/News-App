@@ -17,6 +17,7 @@ const passPortGoogle = (passport) => {
       },
       async function (accessToken, refreshToken, profile, done) {
         try {
+          const date = new Date();
           let userExist = await checkLoginOth(1, profile.id, profile.emails[0].value);
           let user = null
           if (userExist.length !== 0) {
@@ -28,7 +29,8 @@ const passPortGoogle = (passport) => {
               name: profile.displayName,
               email: profile.emails[0].value,
               username: profile.name.familyName,
-              type_login: 1
+              type_login: 1,
+              date_register: `${moment().format("YYYY-MM-DD")} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
             };
 
           user = await add(newUser);
