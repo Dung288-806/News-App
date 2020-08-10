@@ -64,7 +64,7 @@ router.post("/register", auth, async (req, res) => {
     const user = req.body;
     user.dob = moment(user.dob, `DD/MM/YYYY`).format(`YYYY-MM-DD`);
     user.password = await bcrypt.hash(user.password, 8);
-
+    user.date_register = new Date(Date.now())
     await UserModel.add(user);
 
     res.render("viewAccount/login", {
