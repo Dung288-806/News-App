@@ -15,7 +15,8 @@ AuthRoute.get(
     req.session.isAuthenticated = true;
     req.session.authUser = req.user;
     console.log('DDax vo day');
-    res.redirect(req.headers.referer || "/");
+    res.redirect("/");
+    // res.redirect(req.headers.referer || "/");
   }
 );
 module.exports = AuthRoute;
