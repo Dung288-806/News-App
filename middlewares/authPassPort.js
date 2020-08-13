@@ -14,7 +14,7 @@ AuthRoute.get(
   function (req, res) {
     req.session.isAuthenticated = true;
     req.session.authUser = req.user;
-    res.redirect(req.headers.referer || "/");
+    res.redirect("/");
   }
 );
 module.exports = AuthRoute;
