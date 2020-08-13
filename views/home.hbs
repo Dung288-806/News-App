@@ -5,26 +5,26 @@
             data-animate-effect="fadeIn">
             <div class="fh5co_suceefh5co_height img-hover">
                 <div class="fh5co_suceefh5co_height_position_absolute img-hover"></div>
-                <img src="/public{{articleMostOutstanding_1.small_avt}}" alt="img" />
+                <img src="{{articleMostOutstanding_1.small_avt}}" alt="img" />
                 <div class="fh5co_suceefh5co_height_position_absolute_font p-0"
                     style="bottom: 0; top: auto; left: 0; height: auto; padding: 0 4% !important;">
                     <div class="w-100">
-                        <a href="javascript:;" class="fh5co_good_font">
-                            {{#if articleMostOutstanding_1.isPremium}}
-                            <i class="fa fa-star" aria-hidden="true"></i>
+                        <a href="javascript:;" class="fh5co_good_font" style="font-size: 16px;"
+                            {{#if articleMostOutstanding_1.isPremium}} <i class="fa fa-star" aria-hidden="true"></i>
                             {{/if}}
                             {{articleMostOutstanding_1.title}}
                         </a>
                     </div>
                     <div class="box-author d-flex align-items-center">
                         <div class="box-category" onclick="event.stopPropagation();">
-                            <a href="articles/bycate?id={{articleMostOutstanding_1.csId}}">
+                            <a href="articles/bycate?id={{articleMostOutstanding_1.csId}}" style="font-size: 12px;">
                                 {{articleMostOutstanding_1.csName}}
                             </a>
                         </div>
                     </div>
                     <div>
-                        <a href="javascript:;" class="color_fff" style="color: rgba(255, 255, 255, 0.7) !important">
+                        <a href="javascript:;" class="color_fff"
+                            style="color: rgba(255, 255, 255, 0.7) !important; font-size: 12px;">
                             <i class="fa fa-clock-o"></i>
                             {{articleMostOutstanding_1.datePost}} -
                             <i class="fa fa-comment" aria-hidden="true"></i>
@@ -44,11 +44,11 @@
                     data-animate-effect="fadeIn">
                     <div class="fh5co_suceefh5co_height_2 img-hover">
                         <div class="fh5co_suceefh5co_height_position_absolute"></div>
-                        <img src="/public{{small_avt}}" alt="img" />
+                        <img src="{{small_avt}}" alt="img" />
                         <div class="fh5co_suceefh5co_height_position_absolute_font_2 p-0"
                             style="bottom: 0; top: auto; left: 0; height: auto; padding: 0 4% !important">
                             <div class="w-100">
-                                <a href="/articles/detail/{{id}}" class="fh5co_good_font_2">
+                                <a href="javascript:;" class="fh5co_good_font_2" style="font-size: 16px; ">
                                     {{#if isPremium}}
                                     <i class="fa fa-star" aria-hidden="true"></i>
                                     {{/if}}
@@ -57,14 +57,14 @@
                             </div>
                             <div class="d-flex align-items-center">
                                 <div class="box-category" onclick="event.stopPropagation();">
-                                    <a href="articles/bycate?id={{csId}}">
+                                    <a href="articles/bycate?id={{csId}}" style="font-size: 12px;">
                                         {{csName}}
                                     </a>
                                 </div>
                             </div>
                             <div>
-                                <a href="/articles/detail/{{id}}" class="color_fff"
-                                    style="color: rgba(255, 255, 255, 0.7) !important">
+                                <a href="javascript:;" class="color_fff"
+                                    style="color: rgba(255, 255, 255, 0.7) !important; font-size: 12px;">
                                     <i class="fa fa-clock-o"></i>
                                     {{datePost}} -
                                     <i class="fa fa-comment" aria-hidden="true"></i>
@@ -92,25 +92,24 @@
             <div class="item px-2 card-article"
                 onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../isLogin}});">
                 <div class="fh5co_latest_trading_img_position_relative">
-                    <div class="fh5co_latest_trading_img"><img src="/public{{small_avt}}" alt=""
+                    <div class="fh5co_latest_trading_img"><img src="{{small_avt}}" alt=""
                             class="fh5co_img_special_relative" /></div>
                     <div class="fh5co_latest_trading_img_position_absolute"></div>
                     <div class="fh5co_latest_trading_img_position_absolute_1">
-                        <a href="/articles/detail/{{id}}" class="text-white"
-                            style="font-size: 16px; font-weight: bold;">
+                        <a href="javascript:;" class="text-white" style="font-size: 14px;">
                             {{#if isPremium}}
-                            <i class="fa fa-star" aria-hidden="true"></i>
+                            <i class=" fa fa-star" aria-hidden="true"></i>
                             {{/if}}
                             {{title}}
                         </a>
                         <div class="d-flex align-items-center" style="color: #FFF">
                             <div class="box-category" onclick="event.stopPropagation();">
-                                <a href="articles/bycate?id={{csId}}">
+                                <a href="articles/bycate?id={{csId}}" style="font-size: 12px;">
                                     {{csName}}
                                 </a>
                             </div>
                         </div>
-                        <div class="fh5co_latest_trading_date_and_name_color b-0">
+                        <div class="fh5co_latest_trading_date_and_name_color b-0" style="font-size: 12px;">
                             <i class="fa fa-clock-o"></i>
                             {{datePost}} -
                             <i class="fa fa-comment" aria-hidden="true"></i>
@@ -136,10 +135,10 @@
             <div class="item px-2 h-100"
                 onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../isLogin}});">
                 <div class="fh5co_hover_news_img">
-                    <div class="fh5co_news_img"><img src="/public{{small_avt}}" alt="" /></div>
+                    <div class="fh5co_news_img"><img src="{{small_avt}}" alt="" /></div>
                     <div class="d-flex flex-column justify-content-between">
-                        <a href="/articles/detail/{{id}}" class="d-block fh5co_small_post_heading">
-                            <span style="font-size: 16px; font-weight: bold;">
+                        <a href="javascript:;" class="d-block fh5co_small_post_heading">
+                            <span style="font-size: 14px; font-weight: bold;">
                                 {{#if isPremium}}
                                 <i class="fa fa-star" aria-hidden="true"></i>
                                 {{/if}}
@@ -149,12 +148,12 @@
                         <div class="d-flex align-items-center">
                             <div class="box-category" onclick="event.stopPropagation();">
                                 <a href="articles/bycate?id={{csId}}"
-                                    style="color: #424040; border: solid 1px #424040;">
+                                    style="color: #424040; border: solid 1px #424040; font-size: 12px;">
                                     {{csName}}
                                 </a>
                             </div>
                         </div>
-                        <div class="c_g">
+                        <div class="c_g" style="font-size: 12px;">
                             <i class="fa fa-clock-o"></i>
                             {{datePost}} -
                             <i class="fa fa-comment" aria-hidden="true"></i>
@@ -183,7 +182,8 @@
                 <div class="clearfix"></div>
                 <div class="fh5co_tags_all">
                     {{#each this.tags_15}}
-                    <a href="/articles/bytag?id={{id}}&page=1" class="fh5co_tagg">{{tag_name}}</a>
+                    <a href="/articles/bytag?id={{id}}&page=1" class="fh5co_tagg"
+                        style="font-size: 14px;">{{tag_name}}</a>
                     {{/each}}
                 </div>
             </div>

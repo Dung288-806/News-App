@@ -315,20 +315,21 @@
             <form id="frmRegister" method="POST" action="">
                 <h1 style="margin-bottom: 16px;">Register</h1>
                 <input autofocus required name="name" id="name" type="text" placeholder="FullName" />
-                <span id="checkuser" class="check">Username đã tồn tại</span>
-                <span id="checkuser1" class="check">Username không được có ký tự đặc biệt</span>
+                <span id="checkuser" class="check">Username already exists</span>
+                <span id="checkuser1" class="check">Username not contain special characters</span>
                 <input required name="username" id="username" type="text" placeholder="User" />
-                <span id="checkemail" class="check">Email đã tồn tại</span>
+                <span id="checkemail" class="check">Email already exists</span>
                 <input required name="email" id="email" type="email" placeholder="Email" />
                 <input type="text" class="form-control" id="txtDOB" name="dob">
 
-                <span id="checkpass" class="check"> tối thiếu 6. Cần 1 hoa và 1 thường</span>
+                <span id="checkpass" class="check"> Minimum 6, contains at least 1 uppercase and 1 lowercase
+                    characters</span>
                 <input required onkeyup="checkPassword()" name="password" id="txtMatKhau" type="password"
                     placeholder="Password" />
-                <span id="checkConfirm" class="check">Không trùng passwword</span>
+                <span id="checkConfirm" class="check">Password does not match</span>
                 <input required id="confirm" type="password" placeholder="Confirm" />
                 <div class="progressBar-container">
-                    <span>Độ bảo mật:</span>
+                    <span>Security &nbsp;</span>
                     <div class="progressBar">
                         <div class="progressBar-separate">
                             <div></div>
@@ -365,7 +366,8 @@
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
     <script>
         $(document).ready(() => {
             $('.check').hide()

@@ -126,10 +126,10 @@
         <div style="width: 100%">
             <a href="/account/changepass">Changing Your Password?</a>
         </div>
+        {{#if this.isSubcriber}}
         <a href="/" class="btn-come-back">
             <i class="fa fa-home" aria-hidden="true"></i>
         </a>
-        {{#if this.isSubcriber}}
         {{/if}}
         {{#if this.isWriter}}
         <a href="/writer" class="btn-come-back">

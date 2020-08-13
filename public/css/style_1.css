@@ -321,22 +321,27 @@ a:hover {
         -webkit-transform: translateX(5px);
         transform: translateX(5px)
     }
+
     30% {
         -webkit-transform: translateX(-5px);
         transform: translateX(-5px)
     }
+
     50% {
         -webkit-transform: translateX(3px);
         transform: translateX(3px)
     }
+
     65% {
         -webkit-transform: translateX(-3px);
         transform: translateX(-3px)
     }
+
     80% {
         -webkit-transform: translateX(2px);
         transform: translateX(2px)
     }
+
     100% {
         -webkit-transform: translateX(0);
         transform: translateX(0)
@@ -348,22 +353,27 @@ a:hover {
         -webkit-transform: translateX(5px);
         transform: translateX(5px)
     }
+
     30% {
         -webkit-transform: translateX(-5px);
         transform: translateX(-5px)
     }
+
     50% {
         -webkit-transform: translateX(3px);
         transform: translateX(3px)
     }
+
     65% {
         -webkit-transform: translateX(-3px);
         transform: translateX(-3px)
     }
+
     80% {
         -webkit-transform: translateX(2px);
         transform: translateX(2px)
     }
+
     100% {
         -webkit-transform: translateX(0);
         transform: translateX(0)
@@ -1073,7 +1083,7 @@ a:hover {
 
 .single #fh5co-title-box {
     position: relative;
-    height: 700px;
+    height: 500px;
     width: 100%
 }
 

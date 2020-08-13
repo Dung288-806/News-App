@@ -139,7 +139,7 @@ a:hover {
   transition: transform 1.5s; }
 
 .paging-active {
-  background-color: #000;
+  background-color: #000 !important;
   color: #FFF; }
 
 nav {

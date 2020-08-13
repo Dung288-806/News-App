@@ -8,7 +8,10 @@ const userModel = require("../models/user.model");
 const router = express.Router();
 
 router.get("/login", auth, async (req, res) => {
-  res.render("viewAccount/login", { layout: false });
+  res.render("viewAccount/login", {
+    layout: false,
+    setUrl: req.headers.referer || res.locals.setUrl,
+  });
 });
 
 router.post("/login", auth, async (req, res) => {
@@ -25,6 +28,8 @@ router.post("/login", auth, async (req, res) => {
         layout: false,
         err: true,
         mes: "Not found user",
+        pass: req.body.password,
+        setUrl: req.body.setUrl,
       });
     }
     const isMatch = await bcrypt.compare(req.body.password, user[0].password);
@@ -33,25 +38,28 @@ router.post("/login", auth, async (req, res) => {
         layout: false,
         err: true,
         mes: "Invalid password",
-        email: user[0].email,
+        email: username,
+        isFocusPass: true,
+        setUrl: req.body.setUrl,
       });
     }
     delete user[0].password;
     req.session.isAuthenticated = true;
     req.session.authUser = user[0];
-    const url = req.query.retUrl || "/";
+    const url = req.body.setUrl || "/";
     if (user[0].role == 3) {
-      return res.redirect("/admin/dashboard");
+      return res.redirect(req.body.setUrl || "/admin/dashboard");
     } else if (user[0].role == 1) {
-      return res.redirect("/writer");
+      return res.redirect(req.body.setUrl || "/writer");
     } else if (user[0].role == 2) {
-      return res.redirect("/editor");
+      return res.redirect(req.body.setUrl || "/editor");
     } else res.redirect(url);
   } catch (e) {
     res.render("viewAccount/login", {
       layout: false,
       err: true,
       mes: e + " ",
+      setUrl: req.body.setUrl
     });
   }
 });
@@ -62,18 +70,16 @@ router.get("/register", auth, async (req, res) => {
 router.post("/register", auth, async (req, res) => {
   try {
     const user = req.body;
-    const date = new Date()
+    const date = new Date(Date.now())
     user.dob = moment(user.dob, `DD/MM/YYYY`).format(`YYYY-MM-DD`);
     user.password = await bcrypt.hash(user.password, 8);
-    user.date_register = `${moment().format("YYYY-MM-DD")} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+    user.date_register = moment(date).format();
     await UserModel.add(user);
-
     res.render("viewAccount/login", {
       layout: false,
       meg: true,
     });
   } catch (e) {
-    console.log(e + "");
     res.render("viewAccount/register", {
       layout: false,
       meg: false,
@@ -115,7 +121,6 @@ router.get("/checkEmailUpdate", async (req, res) => {
 router.post("/logout", authLogin, (req, res) => {
   req.session.destroy((e) => {
     if (e) {
-      console.log(e + " ");
       return res.redirect("/");
     }
     // res.clearCookie("sid");
@@ -131,7 +136,6 @@ router.get("/forgot", async (req, res) => {
 router.post("/forgot", async (req, res) => {
   try {
     const user = await UserModel.GetUserByEmail(req.body.email);
-
     if (user.length == 0) {
       return res.render("viewAccount/ForgotPass", {
         layout: false,
@@ -147,7 +151,10 @@ router.post("/forgot", async (req, res) => {
       });
     }
     const OTP = Math.floor(Math.random() * 100) + 10000;
-    res.cookie("OTP", OTP);
+    res.cookie("OTP", OTP, {
+      expires: new Date(Date.now() + 1000 * 60 * 3),
+      httpOnly: true,
+    });
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -184,7 +191,6 @@ router.post("/forgot", async (req, res) => {
       }
     });
   } catch (e) {
-    console.log(e + "  ");
     return res.render("viewAccount/ForgotPass", {
       layout: false,
       err: true,
@@ -199,6 +205,7 @@ router.post("/confirm", (req, res) => {
     return res.render("viewAccount/ChangePass", {
       layout: false,
       id: req.body.id_user,
+      isForgot: true,
     });
   }
   return res.render("viewAccount/confirmOTP", {
@@ -210,44 +217,36 @@ router.post("/confirm", (req, res) => {
 
 router.post("/changepass", async (req, res) => {
   try {
+
     const passHash = await bcrypt.hash(req.body.password, 8);
-    const id_user = req.body.change
-      ? req.session.authUser.id
-      : req.body.id_user;
+    const id_user = req.body.isForgot == "true"
+      ? req.body.id_user
+      : req.session.authUser.id;
     const user = await UserModel.UpdatePass(passHash, id_user);
-    if (req.body.change) {
+    if (req.body.isForgot == "false") {
       return res.redirect("/account/profile");
     }
     res.redirect("/account/login");
   } catch (e) {
-    res.render("viewAccount/ChangePass", {
-      layout: false,
-      err: true,
-      mes: e + " ",
-    });
+    res.render("500", { layout: false });
   }
 });
 
 router.get("/changepass", authLogin, async (req, res) => {
-  const isForgot = req.query.isForgot == true;
-  res.render("viewAccount/ChangePass", { layout: false, isForgot });
+  res.render("viewAccount/ChangePass", { layout: false, isForgot: false });
 });
 
 router.get("/compareOldPass/:pass", async (req, res) => {
   try {
     const oldPass = req.params.pass;
-    console.log(oldPass);
-    console.log(req.session.authUser);
-    const user = await userModel.single(req.session.authUser.id);
-    console.log(oldPass, user);
 
+    const user = await userModel.single(req.session.authUser.id);
     const isMatch = await bcrypt.compare(oldPass, user[0].password);
     if (!isMatch) {
       return res.json(false);
     }
     return res.json(true);
   } catch (e) {
-    console.log(e + " ");
     return res.json(false);
   }
 });
@@ -289,9 +288,8 @@ router.post("/updateProfile", authLogin, async function (req, res) {
 });
 
 router.get("/profile", authLogin, async function (req, res) {
-  console.log(res.locals.user);
   res.locals.user.dob1 = moment(res.locals.user.dob).format("DD/MM/YYYY");
-  console.log(res.locals.user.dob1);
+
   res.render("viewAccount/profile", {
     layout: false,
   });
@@ -308,6 +306,5 @@ router.post("/extension", authLogin, async (req, res) => {
   );
   res.redirect(`/articles/detail/${req.body.article_id}`);
 });
-
 
 module.exports = router;

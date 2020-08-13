@@ -350,18 +350,20 @@
                 {{#if err}}
                 <div class="alert alert-danger mt-3" id="alertConfirm">{{mes}}</div>
                 {{/if}}
-                <div class="alert alert-danger mt-3" id="alertConfirm">Invalid confirm pass</div>
-                <span {{#if isForgot}} style="display: none;" {{/if}} id="oldPassCheck">Nhập Sai Password</span>
+                
+                <span id="oldPassCheck">Enter wrong Password</span>
                 <input {{#if isForgot}} style="display: none;" {{/if}} id="txtOldPass" type="password"
-                    name="oldPassword" required placeholder="Old Password">
-                <input {{#if isForgot}} style="display: none;" {{/if}} type="hidden" name="change" value="change">
-                <span id="checkpass" class="check">Pass tối thiếu 6. Chứa ít nhất 1 số và 1 ký tự hoa và thường</span>
+                    name="oldPassword"  placeholder="Old Password">
+                
+                <span id="checkpass" class="check">Minimum 6, contains at least 1 uppercase and 1 lowercase
+                    characters</span>
                 <input required onkeyup="checkPassword()" name="password" id="txtMatKhau" type="password"
                     placeholder="Password" />
-
+                <input id="isForgot" type="hidden" name="isForgot" value="{{isForgot}}">
+                <span style="color: red;" id="alertConfirm">Invalid confirm pass</span>
                 <input required name="confirm" id="confirm" type="password" placeholder="Confirm" />
                 <div class="progressBar-container">
-                    <span>Độ bảo mật:</span>
+                    <span>Security &nbsp;</span>
                     <div class="progressBar">
                         <div class="progressBar-separate">
                             <div></div>
@@ -394,28 +396,50 @@
         });
 
         function isValidate() {
-            const oldPass = $('#txtOldPass').val()
-            $.getJSON(`/account/compareOldPass/${oldPass}`, (data) => {
-                if (data) {
-                    const pass = $('#txtMatKhau').val()
-                    const cf = $('#confirm').val()
-                    if (pass === cf) {
-
-                        if (invalidPass())
-                            $('#frmChange').off('submit').submit()
-                        else {
-                            $('#checkpass').show()
-                            $('#txtMatKhau').focus()
-                        }
-                    } else {
-                        $('#alertConfirm').show()
-                        $('#confirm').focus()
+            const isForgot = $('#isForgot').val()
+            const pass = $('#txtMatKhau').val()
+            const cf = $('#confirm').val()
+            if(isForgot != "false") {
+                if (pass === cf) {
+                    if (invalidPass())
+                        $('#frmChange').off('submit').submit()
+                    else {
+                        $('#alertConfirm').hide()
+                        $('#checkpass').show()
+                        $('#txtMatKhau').focus()
                     }
                 } else {
-                    $("#oldPassCheck").show()
-                    $('#txtOldPass').focus()
+                    $('#alertConfirm').show()
+                    $('#confirm').focus()
                 }
-            })
+            } else {
+
+                const oldPass = $('#txtOldPass').val()
+                $.getJSON(`/account/compareOldPass/${oldPass}`, (data) => {
+                    if (data) {
+                        if (pass === cf) {
+                            if (invalidPass())
+                                $('#frmChange').off('submit').submit()
+                            else {
+                                 $("#oldPassCheck").hide()
+                                 $('#alertConfirm').hide()
+                                $('#checkpass').show()
+                                $('#txtMatKhau').focus()
+                            }
+                        } else {
+                            $("#oldPassCheck").hide()
+                            $('#alertConfirm').show()
+                            $('#checkpass').hide()
+                            $('#confirm').focus()
+                        }
+                    } else {
+                        $('#alertConfirm').hide()
+                        $('#checkpass').hide()
+                        $("#oldPassCheck").show()
+                        $('#txtOldPass').focus()
+                    }
+                })
+            }
         }
 
         function invalidPass() {

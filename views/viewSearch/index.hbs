@@ -13,7 +13,7 @@
                     onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../isLogin}});">
                     <div class="col-md-5">
                         <div class="fh5co_hover_news_img">
-                            <div class="fh5co_news_img"><img src="/public{{small_avt}}" alt="" /></div>
+                            <div class="fh5co_news_img"><img src="{{small_avt}}" alt="" /></div>
                         </div>
                     </div>
                     <div class="col-md-7 d-flex flex-column">
@@ -63,6 +63,22 @@
                 <h3>Không có dữ liệu</h3>
                 {{/if}}
 
+                <div class="row mx-0 no-copy">
+                    <div class="col-12 text-center pb-4 pt-4 no-copy d-flex flex-wrap justify-content-center">
+                        <a href="/search?q={{textSearch}}&page={{prePage}}"
+                            class="btn_mange_pagging {{#if preDisable}}button-disabled{{/if}} mt-2">
+                            <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        </a>
+                        {{#each pageItems}}
+                        <a href="/search?q={{textSearch}}&page={{value}}"
+                            class="btn_pagging {{#if isActive}}paging-active{{/if}} mt-2">{{value}}</a>
+                        {{/each}}
+                        <a href="/search?q={{textSearch}}&page={{nextPage}}"
+                            class="btn_mange_pagging {{#if nextDisable}}button-disabled{{/if}} mt-2">
+                            <i class="fa fa-angle-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
             <div class="col-md-3 animate-box" data-animate-effect="fadeInRight">
                 <div>
@@ -76,22 +92,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mx-0 no-copy">
-            <div class="col-12 text-center pb-4 pt-4">
-                <a href="/search?q={{textSearch}}&page={{prePage}}"
-                    class="btn_mange_pagging {{#if preDisable}}button-disabled{{/if}}">
-                    <i class="fa fa-angle-left" aria-hidden="true"></i>
-                </a>
-                {{#each pageItems}}
-                <a href="/search?q={{textSearch}}&page={{value}}"
-                    class="btn_pagging {{#if isActive}}paging-active{{/if}}">{{value}}</a>
-                {{/each}}
-                <a href="/search?q={{textSearch}}&page={{nextPage}}"
-                    class="btn_mange_pagging {{#if nextDisable}}button-disabled{{/if}}">
-                    <i class="fa fa-angle-right" aria-hidden="true"></i>
-                </a>
-            </div>
-        </div>
+
     </div>
 </div>
 

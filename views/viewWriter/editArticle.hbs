@@ -62,7 +62,7 @@
             </header>
             <main>
                 <h4>Ảnh đại diện:</h4>
-                <a class="image featured"><img id="show-avt" src="/public{{article.big_avt}}" alt="" /></a>
+                <a class="image featured"><img id="show-avt" src="{{article.big_avt}}" alt="" /></a>
                 <div class="d-flex">
                     <textarea name="content" id="txtContent"
                         placeholder="Nội dung bài báo...">{{article.content}}</textarea>
@@ -83,10 +83,10 @@
                                     style="cursor: pointer; background-color: #EEE" id="img-item-{{id}}">
                                     <a style="border: none;">
                                         <input type="hidden" name="listIdImg[]" value="{{id}}">
-                                        <img style="max-width: 60%" src="/public{{source_img}}">
+                                        <img style="max-width: 60%" src="{{source_img}}">
                                         <div class="d-flex w-100 mt-3">
                                             <button type="button" class="btn1 btn1-success" style="flex-grow: 1;"
-                                                onclick="openFormPopup('form-show-source-img');showSourceImg('/public{{source_img}}');">Xem
+                                                onclick="openFormPopup('form-show-source-img');showSourceImg('{{source_img}}');">Xem
                                                 Source</button>
                                             <button type="button" class="btn1 btn1-error" style="flex-grow: 1;"
                                                 onclick="deleteImg({{id}}, '{{source_img}}')">Xóa</button>
@@ -237,10 +237,10 @@
                             id="img-item-${item.id}">
                             <a style="border: none;">
                                 <input type="hidden" name="listIdImg[]" value="${item.id}">
-                                <img style="max-width: 60%" src="/public${item.source_img}">
+                                <img style="max-width: 60%" src="${item.source_img}">
                                 <div class="d-flex w-100 mt-3">
                                     <button type="button" class="btn1 btn1-success" style="flex-grow: 1;"
-                                        onclick="openFormPopup('form-show-source-img');showSourceImg('/public${item.source_img}');">Xem Source</button>
+                                        onclick="openFormPopup('form-show-source-img');showSourceImg('${item.source_img}');">Xem Source</button>
                                     <button type="button" class="btn1 btn1-error" style="flex-grow: 1;"
                                         onclick="deleteImg(${item.id}, '${item.source_img}')">Xóa</button>
                                 </div>

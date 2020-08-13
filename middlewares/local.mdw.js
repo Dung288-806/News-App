@@ -37,6 +37,7 @@ module.exports = function (app) {
       res.locals.isLogin = true;
     } else {
       res.locals.isLogin = false;
+      res.locals.setUrl = req.session.setUrl
     }
     next();
   });

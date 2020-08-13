@@ -126,7 +126,7 @@ AdminRoute.get("/categories", authLogin, authRole(3), async (req, res) => {
         }
         return { ...cate };
       })
-    )
+    );
 
     res.render("viewAdmin/Cate/category", {
       isCategory: true,
@@ -139,7 +139,6 @@ AdminRoute.get("/categories", authLogin, authRole(3), async (req, res) => {
       prePage: page - 1,
       isHas: allCate.length === 0,
     });
-
   } catch (e) {
     res.render("viewAdmin/Cate/category", {
       layout: false,
@@ -197,7 +196,6 @@ AdminRoute.get(
         listEditor: newArr,
       });
     } catch (e) {
-      console.log(e + " ");
       res.render("500", { layout: false });
     }
   }
@@ -256,7 +254,6 @@ AdminRoute.get("/categories/check", async (req, res) => {
     }
     return res.json(true);
   } catch (e) {
-    console.log(e + " ");
     return res.json(false);
   }
 });
@@ -486,7 +483,6 @@ AdminRoute.get("/tags", authLogin, authRole(3), async (req, res) => {
       isHas: listTags.length == 0,
     });
   } catch (e) {
-    console.log(e + " ");
     res.render("500", { layout: false });
   }
 });
@@ -497,7 +493,6 @@ AdminRoute.post("/tags/del", authLogin, authRole(3), async (req, res) => {
     await deleteTags_Articles({ Tags_id: req.body.id });
     res.redirect(req.headers.referer || "/admin/tags");
   } catch (e) {
-    console.log(e + " ");
     res.render("500", { layout: false });
   }
 });
@@ -559,7 +554,6 @@ AdminRoute.post(
       await delTagWithArt(condition);
       res.redirect(`/admin/tags/detail/${req.body.Tags_id}`);
     } catch (e) {
-      console.log(e + " ");
       res.render("404", {
         layout: false,
         err: true,
@@ -601,7 +595,6 @@ AdminRoute.get("/tags/detail/:id", authLogin, authRole(3), async (req, res) => {
       id,
     });
   } catch (e) {
-    console.log(e + " ");
     res.render("404", {
       layout: false,
       err: true,
@@ -1036,8 +1029,6 @@ AdminRoute.post("/subscriber/del", authLogin, authRole(3), async (req, res) => {
     ]);
     res.redirect(`/admin/subscriber`);
   } catch (e) {
-    console.log(e + " ");
-
     res.render("500", {
       layout: false,
     });
@@ -1190,7 +1181,6 @@ AdminRoute.get("/articles/status", authLogin, authRole(3), async (req, res) => {
           : "Bị Từ Chối",
     });
   } catch (e) {
-    console.log(e + " ");
     res.render("500", { layout: false });
   }
 });
@@ -1219,10 +1209,12 @@ AdminRoute.post(
   async (req, res) => {
     const { id, post_date, id_stt } = req.body;
     try {
-      await updateRejectApprovedArt({ post_date, status: 2 }, { id });
+      await updateRejectApprovedArt(
+        { post_date, status: 2, reason_reject: null },
+        { id }
+      );
       res.redirect(`/admin/articles/status?id=${id_stt}`);
     } catch (e) {
-      console.log(e + " ");
       res.render("500", { layout: false });
     }
   }
@@ -1240,7 +1232,6 @@ AdminRoute.post(
       );
       res.redirect(`/admin/articles/status?id=${id_stt}`);
     } catch (e) {
-      console.log(e + " ");
       res.render("500", { layout: false });
     }
   }
@@ -1259,7 +1250,6 @@ AdminRoute.post("/articles/del", authLogin, authRole(3), async (req, res) => {
     }
     res.redirect(`/admin/writer/art/id/${req.body.id_writer}`);
   } catch (e) {
-    console.log(e + " ");
     res.render("500", {
       layout: false,
     });
@@ -1405,7 +1395,6 @@ AdminRoute.post("/typeArt/add", authLogin, authRole(3), async (req, res) => {
     await addTypeOfArt({ name: req.body.name });
     res.redirect("/admin/typeArt");
   } catch (e) {
-    console.log(e);
     res.render("500", { layout: false });
   }
 });
@@ -1414,7 +1403,6 @@ AdminRoute.post("/status/add", authLogin, authRole(3), async (req, res) => {
     await addStatusOfArt({ name: req.body.name });
     res.redirect("/admin/status");
   } catch (e) {
-    console.log(e);
     res.render("500", { layout: false });
   }
 });
@@ -1423,7 +1411,6 @@ AdminRoute.post("/typeArt/del", authLogin, authRole(3), async (req, res) => {
     await delTypeArtById({ id: req.body.id });
     res.redirect("/admin/typeArt");
   } catch (e) {
-    console.log(e);
     res.render("500", { layout: false });
   }
 });
@@ -1432,7 +1419,6 @@ AdminRoute.post("/status/del", authLogin, authRole(3), async (req, res) => {
     await delStatusArtById({ id: req.body.id });
     res.redirect("/admin/status");
   } catch (e) {
-    console.log(e);
     res.render("500", { layout: false });
   }
 });
@@ -1447,6 +1433,7 @@ AdminRoute.get("/dashboard", authLogin, authRole(3), async (req, res) => {
     sumUser,
     sumCate,
     sumArt,
+    isDashboard: true
   });
 });
 
@@ -1459,7 +1446,7 @@ AdminRoute.get("/dashboard/data", authLogin, authRole(3), async (req, res) => {
   }, []);
 
   const arrDate = dataArtByDate.reduce((preVal, val) => {
-    preVal.push(moment(val.write_date).format("L"));
+    preVal.push(`${moment(val.write_date).format("D")}-${moment(val.write_date).format('M')}`);
     return preVal;
   }, []);
 
@@ -1502,7 +1489,6 @@ AdminRoute.post(
       }
       res.redirect(`/admin/subscriber?page=${req.body.page}`);
     } catch (e) {
-      console.log(e + " ");
       res.render("500", {
         layout: false,
       });

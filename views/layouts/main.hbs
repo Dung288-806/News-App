@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <link rel="icon" href="https://cdn.iconscout.com/icon/premium/png-256-thumb/newspaper-2102045-1768352.png">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>24 News — Free Website Template, Free HTML5 Template by FreeHTML5.co</title>
+    <title>24 NEWS READ EVERYTHING</title>
     <link href="../../public/css/media_query.css" rel="stylesheet" type="text/css" />
     <link href="../../public/css/bootstrap.css" rel="stylesheet" type="text/css" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
@@ -70,16 +70,15 @@
 
 </head>
 
-<body>
+<body style="position: relative;">
 
     <div class="box-access-alert" id="boxAccessAlert">
         <i class="fa fa-volume-up"></i>
-        <span>Cần phải <b>đăng nhập</b> để có thể xem bài viết <b><i class="fa fa-star-o"
-                    style="font-weight: bold;"></i>
+        <span>Need to <b> Login </b> to view the article <b><i class="fa fa-star-o" style="font-weight: bold;"></i>
                 Premium</b>!!</span>
     </div>
 
-    <header>
+    <header class="container">
         {{> header}}
     </header>
 
@@ -87,13 +86,26 @@
         {{> nav}}
     </nav>
 
-    <main>
+    <main class="container">
         {{{body}}}
     </main>
 
     <footer>
         {{> footer}}
     </footer>
+
+    {{!-- <div class="container-fluid fh5co_footer_right_reserved"
+        style="width: 100vw; position: absolute; bottom: -72px; left: 0">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-6 py-4 Reserved"> © 2019 - 2020, Toàn bộ bản quyền thuộc <a href="/"
+                        title="Free HTML5 Bootstrap templates">24 NEWS</a>. </div>
+                <div class="col-12 col-md-6 spdp_right py-4">
+                    <a href="/" class="footer_last_part_menu">24 NEWS READ EVERYTHING</a>
+                </div>
+            </div>
+        </div>
+    </div> --}}
 
     <div class="gototop js-top">
         <a href="#" class="js-gotop"><i class="fa fa-arrow-up"></i></a>

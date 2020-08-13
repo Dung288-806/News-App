@@ -46,7 +46,7 @@ module.exports = {
                 if(a.type = 2, 1, 0) as isPremium, u.pseudonym
              from ${TABLE_ARTICLES} a join ${TABLE_USER} u
               on a.Writer_id = u.id
-             where a.id = ${id} and a.status = 2 and a.post_date <= CURRENT_TIMESTAMP()`
+             where a.id = ${id} and a.status = 2 and date(a.post_date) <= date(now())`
     );
     return rows[0];
   },
@@ -82,7 +82,7 @@ module.exports = {
               on a.CategoriesSub_id = cs.id left join ${TABLE_COMMENTS} c 
               on a.id = c.article_id
             where a.id <> ${articleCurrent_id}
-              and status = 2 and post_date <= CURRENT_TIMESTAMP()
+              and status = 2 and date(post_date) <= date(now())
               and cs.CategoriesParent_id = (select cs1.CategoriesParent_id 
                                             from categoriessub cs1 
                                             where cs1.id = ${cateSub_id} limit 1)
@@ -98,7 +98,7 @@ module.exports = {
               FROM ${TABLE_ARTICLES} a join ${TABLE_CATEGORIESSUB} cs 
                 on a.CategoriesSub_id = cs.id left join ${TABLE_COMMENTS} c 
                 on a.id = c.article_id
-              WHERE status = 2 and post_date <= CURRENT_TIMESTAMP() and
+              WHERE status = 2 and date(post_date) <= date(now()) and
                 (MATCH(title, sum_content, content) AGAINST ('${key}') || (title like '%${key}%') || (sum_content like '%${key}%') || (content like '%${key}%'))
               group by a.id
               order by a.type = 2 desc, a.post_date desc 
@@ -110,7 +110,7 @@ module.exports = {
     let sql = `select count(*) as countSearch 
     FROM articles 
     WHERE (MATCH(title, sum_content) AGAINST ('${key}') || (title like '%${key}%') || (sum_content like '%${key}%') || (content like '%${key}%'))
-    and status = 2 and post_date <= CURRENT_TIMESTAMP()`;
+    and status = 2 and date(post_date) <= date(now())`;
     const rows = await db.load(sql);
     return rows[0];
   },
@@ -124,7 +124,7 @@ module.exports = {
               on a.CategoriesSub_id = cs.id left join ${TABLE_COMMENTS} c 
               on a.id = c.article_id
             where a.CategoriesSub_id = ${categorySub_id}
-              and a.status = 2 and a.post_date <= CURRENT_TIMESTAMP()
+              and a.status = 2 and date(a.post_date) <= date(now())
             group by a.id
             order by a.type = 2 desc, a.post_date desc
             limit ${start}, ${indexOfPage}`
@@ -135,7 +135,7 @@ module.exports = {
       `select count(*) as amount
              from ${TABLE_ARTICLES} 
              where CategoriesSub_id = ${categorySub_id}
-              and status = 2 and post_date <= CURRENT_TIMESTAMP()`
+              and status = 2 and date(post_date) <= date(now())`
     );
     return rows[0].amount;
   },
@@ -150,7 +150,7 @@ module.exports = {
             on a.CategoriesSub_id = cs.id left join ${TABLE_COMMENTS} c 
             on a.id = c.article_id
             where t_a.Tags_id = ${tag_id} and a.status = 2 
-            and a.post_date <= CURRENT_TIMESTAMP()
+            and date(a.post_date) <= date(now())
             group by a.id
             order by a.type = 2 desc, a.post_date desc 
             limit ${start}, ${indexOfPage}`
@@ -162,7 +162,7 @@ module.exports = {
             from ${TABLE_TAG_ARTICLE} t_a join ${TABLE_ARTICLES} a 
             on t_a.Articles_id = a.id
             where t_a.Tags_id = ${tag_id} and status = 2 
-            and a.post_date <= CURRENT_TIMESTAMP()
+            and date(a.post_date) <= date(now())
             order by post_date desc `
     );
     return rows.length;
@@ -177,7 +177,7 @@ module.exports = {
               on a.id = c.article_id join ${TABLE_CATEGORIESSUB} cs 
               on cs.id = a.CategoriesSub_id join ${TABLE_USER} u 
               on u.id = a.writer_id
-             where a.status = 2 and a.post_date <= CURRENT_TIMESTAMP()
+             where a.status = 2 and date(a.post_date) <= date(now())
              group by a.id
              order by views desc limit 10`
     );
@@ -192,7 +192,7 @@ module.exports = {
               on a.id = c.article_id join ${TABLE_CATEGORIESSUB} cs 
               on cs.id = a.CategoriesSub_id join ${TABLE_USER} u 
               on u.id = a.writer_id
-             where status = 2 and post_date <= CURRENT_TIMESTAMP()
+             where status = 2 and date(post_date)  <= date(now())
              group by a.id
              order by post_date desc 
              limit 10`
@@ -201,28 +201,25 @@ module.exports = {
 
   articleByCategryMostNew_10: function (start, indexOfPage) {
     return db.load(
-      `select ar.id, ar.title, ar.small_avt, ar.sum_content, ar.views,
-              DATE_FORMAT(ar.post_date, "%H:%i %d/%m/%Y") as 'datePost', if(ar.type = 2, 1, 0) as isPremium,
-                (select count(c.id)
-                  from ${TABLE_ARTICLES} a 
-                  left join ${TABLE_COMMENTS} c 
-                  on a.id = c.article_id
-                  where a.id = ar.id
-                  group by a.id ) as nCmt, ar.csId, ar.csName,
-                  ar.writer_id, ar.writerPseudonym
-            from  
-              ( select a1.*, csub.id as csId, csub.name as csName, u.pseudonym as writerPseudonym
-                from ${TABLE_CATEGORIESSUB} csub join ${TABLE_ARTICLES} a1 
-                  on csub.id = a1.CategoriesSub_id join ${TABLE_USER} u on u.id = a1.writer_id
-                where a1.status = 2 and a1.post_date <= CURRENT_TIMESTAMP()
-                  and a1.post_date >= all 
-                    ( select a2.post_date 
-                      from ${TABLE_ARTICLES} a2 
-                      where a2.CategoriesSub_id = a1.CategoriesSub_id)
-                ) ar 
-            group by ar.CategoriesSub_id
-            order by sum(ar.views) desc
-            limit ${start}, ${indexOfPage}`
+      `select ar.id, ar.title, ar.small_avt, ar.sum_content, ar.views, ar.post_date,
+            DATE_FORMAT(ar.post_date, "%H:%i %d/%m/%Y") as 'datePost', if(ar.type = 2, 1, 0) as isPremium,
+            (select count(c.id)
+              from articles a 
+              left join comments c 
+              on a.id = c.article_id
+              where a.id = ar.id
+              group by a.id ) as nCmt, csub.id csId, csub.name csName, max(ar.post_date)
+        from  
+            categoriessub csub join articles ar 
+              on csub.id = ar.CategoriesSub_id join user u 
+              on u.id = ar.writer_id
+        where ar.status = 2 and date(ar.post_date)  <= date(now()) and
+          ar.post_date = (select max(a1.post_date) 
+                          from articles a1
+                          where a1.CategoriesSub_id = ar.CategoriesSub_id)
+        group by ar.CategoriesSub_id 
+        order by sum(ar.views) desc
+        limit ${start}, ${indexOfPage}`
     );
   },
   countArticleByCategryMostNew_10: async function () {
@@ -230,7 +227,10 @@ module.exports = {
       `select *
               from ${TABLE_CATEGORIESSUB} csub join
                 ${TABLE_ARTICLES} ar on csub.id = ar.CategoriesSub_id
-             where ar.status = 2 and ar.post_date <= CURRENT_TIMESTAMP()
+             where ar.status = 2 and date(ar.post_date)  <= date(now())
+             and ar.post_date = (select max(a1.post_date) 
+                from articles a1
+                where a1.CategoriesSub_id = ar.CategoriesSub_id)
              group by csub.id
              order by ar.views desc
              limit 10`
@@ -246,8 +246,8 @@ module.exports = {
              from ${TABLE_ARTICLES} a left join ${TABLE_COMMENTS} c on a.id = c.article_id
               join ${TABLE_CATEGORIESSUB} cs on cs.id = a.CategoriesSub_id
               join ${TABLE_USER} u on u.id = a.writer_id
-             where status = 2 and post_date <= CURRENT_TIMESTAMP()
-              and DATEDIFF(CURRENT_TIMESTAMP(), post_date) <= 21
+             where status = 2 and date(post_date)  <= date(now())
+              and DATEDIFF(date(now()), post_date) <= 21
              GROUP by a.id
             order by count(c.id) DESC
              limit 5`
@@ -264,7 +264,7 @@ module.exports = {
               on cs.CategoriesParent_id = cp.id join ${TABLE_TYPEARTICLE} ta
               on a.type = ta.id 
              where Writer_id = ${writer_id} and status = 2 
-              and timestampdiff(second, post_date,current_timestamp()) < 0
+              and timestampdiff(second, post_date,date(now())) < 0
              order by write_date desc
              limit ${start}, ${indexOfPage}`
     );
@@ -274,7 +274,7 @@ module.exports = {
       `select count(*) as c
              from ${TABLE_ARTICLES} 
              where Writer_id = ${writer_id} and status = 2 
-              and timestampdiff(second, post_date,current_timestamp()) < 0`
+              and timestampdiff(second, post_date,date(now())) < 0`
     );
     return rows[0].c;
   },
@@ -289,7 +289,7 @@ module.exports = {
               on cs.CategoriesParent_id = cp.id join ${TABLE_TYPEARTICLE} ta
               on a.type = ta.id 
              where Writer_id = ${writer_id} and status = 2 
-              and timestampdiff(second, post_date,current_timestamp()) > 0
+              and timestampdiff(second, post_date,date(now())) > 0
              order by write_date desc
              limit ${start}, ${indexOfPage}`
     );
@@ -299,7 +299,7 @@ module.exports = {
       `select count(*) as c
              from ${TABLE_ARTICLES} 
              where Writer_id = ${writer_id} and status = 2 
-              and timestampdiff(second, post_date,current_timestamp()) > 0`
+              and timestampdiff(second, post_date,date(now())) > 0`
     );
     return rows[0].c;
   },
@@ -481,7 +481,7 @@ module.exports = {
   },
   getArtWithDate: () => {
     return db.load(
-      `SELECT COUNT(*) as SL, write_date FROM ${TABLE_ARTICLES} GROUP BY date(write_date) LIMIT 5`
+      `SELECT COUNT(*) as SL, write_date FROM ${TABLE_ARTICLES} GROUP BY date(write_date) ORDER BY date(write_date) ASC limit 8`
     );
   },
 };

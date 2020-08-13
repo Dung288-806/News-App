@@ -6,7 +6,7 @@
     onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../isLogin}});">
     <div class="col-md-5">
         <div class="fh5co_hover_news_img">
-            <div class="fh5co_news_img"><img src="/public{{small_avt}}" alt="" /></div>
+            <div class="fh5co_news_img"><img src="{{small_avt}}" alt="" /></div>
         </div>
     </div>
     <div class="col-md-7 d-flex flex-column">
@@ -36,17 +36,17 @@
     </div>
 </div>
 {{/each}}
-<div class="row mx-0" data-animate-effect="fadeInUp">
-    <div class="col-12 text-center pb-4 pt-4 no-copy">
-        <a href="javascript:;" class="btn_mange_pagging {{#if preDisable}}button-disabled{{/if}}"
+<div class="row mx-0" data-animate-effect="fadeInUp" style="font-size: 13px;">
+    <div class="boxpaging col-12 text-center pb-4 pt-4 no-copy d-flex flex-wrap justify-content-center">
+        <a href="javascript:;" class="btn_mange_pagging {{#if preDisable}}button-disabled{{/if}} mt-2"
             onclick="clickPaging({{pagePre}})">
             <i class="fa fa-angle-left" aria-hidden="true"></i>
         </a>
         {{#each this.pageItems}}
         <a href="javascript:;" onclick="clickPaging({{value}});"
-            class="btn_pagging {{#if isActive}}paging-active{{/if}}">{{value}}</a>
+            class="btn_pagging {{#if isActive}}paging-active{{/if}} mt-2">{{value}}</a>
         {{/each}}
-        <a href="javascript:;" class="btn_mange_pagging {{#if nextDisable}}button-disabled{{/if}}"
+        <a href="javascript:;" class="btn_mange_pagging {{#if nextDisable}}button-disabled{{/if}} mt-2"
             onclick="clickPaging({{pageNext}})">
             <i class="fa fa-angle-right" aria-hidden="true"></i>
         </a>

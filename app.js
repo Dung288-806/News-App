@@ -60,7 +60,7 @@ app.get("/articleByCategoryMostView-paging/:page", async function (req, res) {
     );
 
     const n = await articleModel.countArticleByCategryMostNew_10();
-    const nPage = Math.ceil(n / indexOfPage) + 2;
+    const nPage = Math.ceil(n / indexOfPage);
     let pageItems = [];
     for (let i = 1; i <= nPage; i++) {
       const item = {
@@ -94,11 +94,13 @@ app.get("/", async function (req, res) {
   try {
     const indexOfPage = 2;
     const articleMostView_10 = await articleModel.articleMostView_10();
+
     const articleNew_10 = await articleModel.articleNew_10();
     const articleByCategoryMostView_10 = await articleModel.articleByCategryMostNew_10(
       0,
       indexOfPage
     );
+
     const articleMostOutstanding_5 = await articleModel.articleMostOutstanding_5();
     const articleMostOutstanding_1 = articleMostOutstanding_5[0];
     delete articleMostOutstanding_5[0];

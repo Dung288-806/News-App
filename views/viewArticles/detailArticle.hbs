@@ -1,25 +1,25 @@
 <div class="single">
-    <div id="fh5co-title-box" style="background-image: url(/public{{articleByID.big_avt}});"
-        data-stellar-background-ratio="0.5">
+    <div id="fh5co-title-box" style="background-image: url({{articleByID.big_avt}});"
+        data-stellar-background-ratio="0.5" style="height: 500px !important;">
         <div class="overlay"></div>
         <div class="page-title">
             <div class="d-flex flex-column align-items-center" style="color: #FFF; margin-bottom: 30px;">
                 <img src="../../public/img/avt-user.png" style="margin-bottom: 4px;">
-                <span style="color: rgba(255, 255, 255, 0.5);">
+                <span style="color: rgba(255, 255, 255, 0.7);">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                     {{articleByID.pseudonym}}
                 </span>
             </div>
-            <span>
+            <span style="color: rgba(255, 255, 255, 0.7);">
                 <i class="fa fa-clock-o"></i>
                 {{articleByID.datePost}}
             </span>
-            <h2>
+            <h1 style="font-size: 32px; color: #FFF">
                 {{#if articleByID.isPremium}}
                 <i class="fa fa-star" aria-hidden="true"></i>
                 {{/if}}
                 {{articleByID.title}}
-            </h2>
+            </h1>
         </div>
     </div>
     <div id="fh5co-single-content d-flex flex-column" class="container-fluid pb-4 pt-4 paddding">
@@ -55,7 +55,7 @@
                     <div>
                         <div class="fh5co_heading fh5co_heading_border_bottom pt-3 py-2 mb-4">
                             <i class="fa fa-eye" aria-hidden="true"></i>
-                            {{articleByID.views1}} lượt xem</div>
+                            {{articleByID.views1}} Views</div>
                     </div>
                 </div>
             </div>
@@ -75,15 +75,15 @@
             <div class="item px-2 card-article"
                 onclick="checkPremiumAndUpdateView({{id}}, {{views}}, {{isPremium}}, {{../isLogin}});">
                 <div class="fh5co_hover_news_img">
-                    <div class="fh5co_news_img"><img src="/public{{small_avt}}" alt="" /></div>
+                    <div class="fh5co_news_img"><img src="{{small_avt}}" alt="" /></div>
                     <div>
                         <a href="javascript:;" class="d-block fh5co_small_post_heading">
-                            <span>
+                            <h5>
                                 {{#if isPremium}}
                                 <i class="fa fa-star" aria-hidden="true"></i>
                                 {{/if}}
                                 {{title}}
-                            </span>
+                            </h5>
                         </a>
                         <div class="d-flex align-items-center">
                             <div class="box-category" onclick="event.stopPropagation();">

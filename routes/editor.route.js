@@ -122,8 +122,13 @@ router.get("/detail", authEditor, async function (req, res) {
 
 router.post("/approved", authEditor, async function (req, res) {
   try {
+    Date.prototype.isValid = function () {
+      return this.getTime() === this.getTime();
+    };
     const Articles_id = req.body.Articles_id;
-    const post_date = new Date(req.body.post_date || new Date() );
+    const post_date = new Date(req.body.post_date).isValid()
+      ? new Date(req.body.post_date)
+      : new Date();
     const CategoriesSub_id = req.body.CategoriesSub_id;
     const status = 2;
     const tags_name = req.body.tags_name;

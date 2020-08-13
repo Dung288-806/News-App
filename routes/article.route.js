@@ -14,7 +14,11 @@ const userModel = require("../models/user.model");
 router.get("/download/:id", authLogin, async function (req, res, next) {
   const article_id = req.params.id - 0;
   const fileName = "24News_" + String(article_id) + ".pdf";
-  const browser = await puppeteer.launch();
+  // const browser = await puppeteer.launch();
+  let browser = await puppeteer.launch({
+    executablePath:
+      "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  });
   const page = await browser.newPage();
   const files = fs.readdirSync("public/pdf");
 
@@ -23,8 +27,8 @@ router.get("/download/:id", authLogin, async function (req, res, next) {
       return res.download(`public/pdf/${fileName}`);
     }
   }
-// http://localhost:3000
-  await page.goto(`/articles/view?id=${article_id}`, {
+
+  await page.goto(`http://localhost:3000/articles/view?id=${article_id}`, {
     waitUntil: "networkidle2",
   });
   await page.setViewport({ width: 0, height: 2000 });
@@ -137,7 +141,6 @@ router.get("/detail/:id", async function (req, res) {
       articleByCate_5_IsEmpty: articleByCate_5.length === 0,
     });
   } catch (e) {
-    console.log(e);
     res.render("500", { layout: false });
   }
 });
@@ -154,7 +157,6 @@ router.post("/update-views", async function (req, res) {
     }
     res.json({ isUpdateView });
   } catch (error) {
-    console.log(e);
     res.render("500", { layout: false });
   }
 });
@@ -238,7 +240,7 @@ router.post("/detail/:id/addComment", authLogin, async function (req, res) {
       }
     );
   } catch (e) {
-    console.log(e);
+    
     res.render("500", { layout: false });
   }
 });
@@ -303,7 +305,6 @@ router.post("/detail/remove-comment", async function (req, res) {
       }
     );
   } catch (e) {
-    console.log(e);
     res.render("500", { layout: false });
   }
 });
@@ -360,7 +361,6 @@ router.get("/detail/:id/pagingComment", async function (req, res) {
       }
     );
   } catch (e) {
-    console.log(e);
     res.render("500", { layout: false });
   }
 });

@@ -39,7 +39,7 @@ module.exports = {
     return db.load(`SELECT pseudonym From user where pseudonym = '${pseu}'`);
   },
   GetUserByEmail: (email) => {
-    return db.load(`SELECT id, username from user where email = '${email}'`);
+    return db.load(`SELECT id, username, type_login, email from user where email = '${email}'`);
   },
   UpdatePass: (pass, id) => {
     return db.load(`UPDATE user set password = '${pass}' where id = '${id}'`);
@@ -111,7 +111,7 @@ module.exports = {
     );
   },
   countAllUser: () => {
-    return db.load(`Select Count (*) as sl from ${TABLE_USER}`);
+    return db.load(`Select Count (*) as sl from ${TABLE_USER} where role = 0`);
   },
   changeTimeExpired: (time, id) => {
     return db.load(`UPDATE user set duration = '${time}' where id = '${id}'`);

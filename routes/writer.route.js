@@ -14,18 +14,27 @@ const multer = require("multer");
 const fs = require("fs");
 const moment = require("moment");
 const userModel = require("../models/user.model");
-const pathIMG = "/uploads/images";
+const cloudinary = require("cloudinary");
+require("dotenv").config();
 
-const storage = multer.diskStorage({
-  filename(req, file, cb) {
-    let filename = Date.now() + "-" + file.originalname;
-    cb(null, filename);
-  },
-  destination(req, file, cb) {
-    cb(null, `./public${pathIMG}`);
+const storage = multer.diskStorage({});
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.match(/jpg|jpe|jpeg|png|gif$i/)) {
+      cb(new Error("File is not supported"), false);
+      return;
+    }
+    cb(null, true);
   },
 });
-const upload = multer({ storage });
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+const uploadImage = async (path) => await cloudinary.uploader.upload(path);
 
 router.get("/", authWriterWithAdmin, async function (req, res) {
   res.render("viewWriter/dashboard", {
@@ -41,9 +50,11 @@ router.post(
   async function (req, res) {
     try {
       const list_source = [];
-      for (const i in req.files) {
+      for (const file of req.files) {
+        const { path } = file;
+        const inforUpload = await uploadImage(path);
         const source_item = {
-          source_img: `${pathIMG}/${req.files[i].filename}`,
+          source_img: inforUpload.url,
         };
         const inforAddImage_Article = await image_articleModel.addImage_Article(
           source_item
@@ -68,11 +79,14 @@ router.post("/delete-image-article", authWriterWithAdmin, async function (
       id: req.body.id_img,
     };
     await image_articleModel.deleteImage_Article(condition_ImageArticle);
-    fs.unlink("./public" + req.body.source_img, (err) => {
-      if (err) console.log(err);
-      //console.log(`xóa ảnh /public${req.body.source_img} cũ thành công`);
-    });
-    res.json({ deleted: true });
+    const source_img = req.body.source_img.split("/");
+    cloudinary.uploader.destroy(
+      source_img[source_img.length - 1].split(".")[0],
+      function (result) {
+        res.json({ deleted: true });
+      }
+    );
+    res.json({ deleted: false });
   } catch (error) {
     console.log(error);
     res.render("500", { layout: false });
@@ -94,15 +108,15 @@ router.post(
   upload.single("avt"),
   async function (req, res) {
     try {
-      // return console.log(req.body);
+      const inforUpload = await uploadImage(req.file.path);
       const write_date = new Date();
       const title = req.body.title;
       const sum_content = req.body.sum_content;
       const CategoriesSub_id = req.body.CategoriesSub_id;
       const content = req.body.content;
       const Writer_id = req.session.authUser.id;
-      const small_avt = pathIMG + "/" + req.file.filename;
-      const big_avt = pathIMG + "/" + req.file.filename;
+      const small_avt = inforUpload.url;
+      const big_avt = inforUpload.url;
       const type = req.body.typeArticle;
       const tags_name = req.body.tags_name;
       const listIdImg = req.body.listIdImg || [];
@@ -222,7 +236,7 @@ router.post(
   upload.single("avt"),
   async function (req, res) {
     try {
-      //const write_date = new Date();
+      const write_date = new Date();
       const Articles_id = req.body.Articles_id;
       const title = req.body.title;
       const sum_content = req.body.sum_content;
@@ -235,8 +249,9 @@ router.post(
       const listIdImg = req.body.listIdImg || [];
       let entity_article = {};
       if (!(typeof req.file === "undefined")) {
-        const small_avt = pathIMG + "/" + req.file.filename;
-        const big_avt = pathIMG + "/" + req.file.filename;
+        const inforUpload = await uploadImage(req.file.path);
+        const small_avt = inforUpload.url;
+        const big_avt = inforUpload.url;
         entity_article = {
           id: Articles_id,
           title,
@@ -247,12 +262,15 @@ router.post(
           status,
           Writer_id,
           type,
+          write_date,
           CategoriesSub_id,
         };
-        fs.unlink("./public" + req.body.article_avt, (err) => {
-          if (err) console.log(err);
-          console.log("xóa ảnh cũ thành công");
-        });
+        cloudinary.uploader.destroy(
+          source_img[source_img.length - 1].split(".")[0],
+          function (result) {
+            console.log(result);
+          }
+        );
       } else {
         entity_article = {
           id: Articles_id,
@@ -262,6 +280,7 @@ router.post(
           status,
           Writer_id,
           type,
+          write_date,
           CategoriesSub_id,
         };
       }

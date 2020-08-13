@@ -35,7 +35,7 @@
         }
 
         .btn-set {
-            width: 150px !important;
+            width: 250px !important;
         }
 
         .hiddenBTN {
@@ -164,7 +164,7 @@
                 </div>
             </nav>
 
-            <div class="container-fluid mt-3" style="height: 480px; overflow-x: auto;">
+            <div class="container-fluid mt-3" {{#if isDashboard}} {{else}} style="height: 480px; overflow-x: auto;" {{/if}} >
                 {{{body}}}
             </div>
         </div>
